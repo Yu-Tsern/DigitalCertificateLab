@@ -85,7 +85,7 @@ mkdir newcerts
 echo 01 > serial
 ```
  
-Second, "openssl.cnf" should be edited as follows. You can either edit it remotely through "vim"/"vi" or transfer the file to your computer and edit it with your own editors. If you're doing this in the first way, use ":42" to get to line 42, and replace the directory ".demoCA" with "/etc/ssl."
+Second, edit "openssl.cnf" either remotely through "vim"/"vi" or transfer the file to your computer and edit it with your own editors. In line 42, replace the directory ".demoCA" with "/etc/ssl."
 
 ```
  [ CA_default ]
@@ -97,7 +97,7 @@ Second, "openssl.cnf" should be edited as follows. You can either edit it remote
  #unique_subject = no                    # Set to 'no' to allow creation of
 ```
 
-[optional] Go to line 129, 134, 139 and 146 to change the defaut values.
+[ optional ] Change defaut values in line 129, 134, 139 and 146.
 
 ```
 [ req_distinguished_name ]
@@ -126,7 +126,7 @@ If you choose to do download the file, here are some tips for file transfer.
 
 (1) SFTP
 
-First, establish a sftp connection by:
+First, establish a SFTP connection by:
 
 ```
 sftp -i <geni_private_key> -oPort=<geni_port> <user>@<host>
@@ -138,7 +138,7 @@ For example,
 sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=28693 yjou2@pc2.geni.it.cornell.edu
 ```
 
-After putting in the passphrase created when generating private key, a sftp> prompt should appear. Now, use "mget" command to fetch the file. If the file is retrieved succefully, it will show you the file name, file size, transfer rate and elapsed time.
+After putting in the passphrase created when generating private key, a "sftp>" prompt should appear. Now, use "mget" command to fetch the file. If the file is retrieved succefully, it will show you the file name, file size, transfer rate and elapsed time.
 
 ```
 sftp> mget /etc/ssl/openssl.cnf
@@ -156,19 +156,11 @@ openssl.cnf                                                     100%   11KB 147.
 
 (2) WinSCP
 
-This method requires you to change the permission of "openssl.cnf" first.
+You can edit it directly through WinSCP, however, this requires you to change the permission of "openssl.cnf" first.
 
 ```
 sudo chmod 777 openssl.cnf
 ```
-
-Then, edit it directly.
-
-![Alt text](pic/Picture32.png?raw=true "Title")
-
-
-![Alt text](pic/Picture33.png?raw=true "Title")
-
  
 Now, the CA node can generate its private key and self-signed certificate. The command of generating private key is:
 
@@ -176,10 +168,10 @@ Now, the CA node can generate its private key and self-signed certificate. The c
 openssl genrsa -out private/cakey.pem 2048
 ```
 
-You can check whether the private key is generated succefully by listing files in "private." If everything went well, you will see a "cakey.pem" in it.
+You can check whether the private key was generated succefully by listing files in "private." If everything went well, you will see a "cakey.pem" in it.
 
 ```
-ls private
+sudo ls private
 ```
 
 Next, the command of creating self-signed certificate is:
@@ -281,15 +273,13 @@ jhuws.csr                                                       100%  993    36.
 
 (2) WinSCP
 
-Using WinSCP requires changing the permission of "openssl.cnf."
+Still, using WinSCP requires changing permission of "openssl.cnf."
 
 ```
 chmod 777 <file_name>
 ```
 
 If you're using the same file name as we did in the previous steps, it is ”chmod 777 jhuws.csr”
-
-![Alt text](pic/Picture37.png?raw=true "Title")
 
 
 ###### Sign a CSR
@@ -541,6 +531,56 @@ sudo service apache2 restart
 
 ## Connection test
 
+Now we can test the result of all the previous work by connecting web server from the USER node. First, ssh the USER node.
+
+
+###### Curl
+
+Since browser on GENI run so slow that you will get crazy if you find you did something dumb, it is suggested that use Curl to test before you run a browser. To make your life easier, get into root environement to do the followings.
+
+```
+sudo su
+apt-get update
+apt-get install curl
+``` 
+
+When the installation is completed, modify the hosts file. The hosts file translates names of websites to IP addresses locally, that is, before the machine made a DNS request. Change permission of this file
+
+```
+sudo chmod 777 hosts
+```
+
+and edit it so that the server name "jhuws.edu" maps to the IP addresses.
+
+```
+127.0.0.1       localhost loghost localhost.pkileo.ch-geni-net.geni.it.cornell.edu
+10.10.2.1       ATK-link-1 ATK-0 ATK
+10.10.1.1       CA-link-0 CA-0 CA
+10.10.3.1       USER-link-2 USER-0 USER
+10.10.3.2       WS-link-2 WS-2 WS
+10.10.1.2       WS-link-0 WS-1
+10.10.2.2       WS-link-1 WS-0
+172.17.2.18     jhuws.edu
+172.17.2.18     www.jhuws.edu
+```
+
+ 
+Where the “172.17.2.18” is the IP address of WS node. And jhuws.edu is the server name we set up before. After this changes are made, use
+
+```
+curl jhuws.edu
+```
+
+to see if it works well. If it returns a HTML response of our web server. The connection is successful. Next, include the SSL configuration 
+
+```
+curl https://jhuws.edu --cacert cacert.crt
+```
+ 
+If the HTML reponse still appears, congratulations! You can step further to test through the browser.
+
+###### Browser
+
 We choose Firefox browser in this experiment. Of course, you can choose other browsers if you like. This part should be done on user node.
 
 ```
@@ -675,66 +715,6 @@ Run the browser and this time enters "127.0.0.1/info.php" into the browser. If w
 
 
 
-
-
-## Result of issued digital certificate
-Now we can view the result of the former work we have done.
-The following operations are all on user node.
-Firstly log onto the user node.
- 
-Because the display of browser on GENI is kind of slow. TO quick test whether we are right by far, we can install the “curl” to perform a quick test.
-Curl is a tool to transfer data from or to a server, using one of the supported protocols.
-Use 
-```
-sudo su
-``` 
-to enter the root account
-Use 
-```
-apt-get update
-```
-to update the existed packets.
-```
-apt-get install curl
-```
-to install the curl.
-
-Then move to the hosts file to do a little modification.
-
-![Alt text](pic/Picture46.png?raw=true "Title")
-
-
-Use command 
-```
-chmod 777 hosts
-```
-to give out the privilege.
-
-
-![Alt text](pic/Picture47.png?raw=true "Title")
- 
-We do these modifications on it. While the “172.17.2.41” is the IP address of ws node, this is the web server in out topology. And jhuws.edu is the server name we set up by ourselves before.
-
-Use command 
-```
-curl jhuws.edu
-```
-to see if it works right.
-
-![Alt text](pic/Picture48.png?raw=true "Title")
-
- 
-It returns the HTML response of our web server. It seems it works well.
-Then we test whether SSL configuration we modified before is work right.
-We use this command 
-```
-curl https://jhuws.edu --cacert cacert.crt
-```
-to test.
-
-![Alt text](pic/Picture49.png?raw=true "Title")
- 
-It also works well. So we can turn to the browser.
 Open the browser on user node. You can refer the instruction before about how to run and open a browser on GENI node.
 We visit the jhuws.edu/info.php first.
  

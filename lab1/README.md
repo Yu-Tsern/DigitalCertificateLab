@@ -372,10 +372,44 @@ sudo apt-get install mysql-server
 
 During the installation, it will ask you to setup a password for MySQL administrator.
 
-![Alt text](pic/Picture3.png?raw=true "Title")
+```
+Package configuration
 
-When the installation is completed, check whether it is installed successfully.
 
+
+
+
+
+
+
+
+
+
+    ┌───────────────────────────┤ Configuring mysql-server-5.7 ├────────────────────────────┐
+    │ While not mandatory, it is highly recommended that you set a password for the MySQL   │ 
+    │ administrative "root" user.                                                           │ 
+    │                                                                                       │ 
+    │ If this field is left blank, the password will not be changed.                        │ 
+    │                                                                                       │ 
+    │ New password for the MySQL "root" user:                                               │ 
+    │                                                                                       │ 
+    │ _____________________________________________________________________________________ │ 
+    │                                                                                       │ 
+    │                                        <Ok>                                           │ 
+    │                                                                                       │ 
+    └───────────────────────────────────────────────────────────────────────────────────────┘ 
+                                                                                              
+
+
+
+
+
+
+
+
+```
+
+When the installation is completed, check whether it is installed successfully through the following command.
 
 ```
 sudo netstat -tap | grep mysql
@@ -394,73 +428,116 @@ tcp        0      0 localhost:mysql         *:*                     LISTEN      
 sudo apt-get install apache2
 ```
 
-![Alt text](pic/Picture5.png?raw=true "Title")
-
-We can run the browser to check whether it is installed successfully or not. But don’t hurry; we need to involve third party software to enable the graphics showing on GENI node. We will cover this content in the following.
+We can run a browser to check whether it is installed successfully after all other settings are completed.
 
 ###### Install PHP
 
 ```
-sudo apt-get install php5 libapache2-mod-php5
+sudo apt install php-pear php-fpm php-dev php-zip php-curl php-xmlrpc php-gd php-mysql php-mbstring php-xml libapache2-mod-php
 ```
 
-![Alt text](pic/Picture6.png?raw=true "Title")
+It may take a while to install these packages. After it is installed, a “www” folder will be created under var. This folder will store source codes of the website.
 
-
-After this installation, it will create a folder named “www” under var. This folder will be reserve the source code of the website.
- 
-![Alt text](pic/Picture7.png?raw=true "Title")
-
+```
+/var
+    backups
+    cache
+    emulab
+    lib
+    local
+    lock
+    log  
+    mail  
+    opt  
+    run  
+    spool  
+    tmp  
+    www
+```
 
 ###### Install PHP and MySQL extensions
 
 ```
-Command:” sudo apt-get install php-mysql php-curl php-gd php-intl php-pear php-imagick php-imap php5-mcrypt php5-memcache php5-ming php5-ps php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl
+Command:” sudo apt-get install php-intl php-imagick php-imap php5-mcrypt php5-memcache php7.0-ps php-pspell php-recode php-snmp php7.0-sqlite php-tidy php7.0-xsl
 ```
 
-
-
-Notice: the GENI node is initiated with an Ubuntu operation system following its default setting. If you choose other operation systems rather the default operation system, there might be a warning message showing on the screen and it may be failed to initiate the GENI nodes. Therefore there is no need to set up another operation system, but if you do so, either it will not affect much in this experiment. 
+Notice: the GENI node is initiated with an Ubuntu operation system following its default setting. If you choose other operation systems rather the default operation system, there might be a warning message showing on the screen and it may fail to initiate the GENI nodes.
 
 ###### Enable Apache SSL connection
 
-Because we need to install the digital certificate later, so we need to enable SSL connection of Apache.
-First, just a brief introduction of Apache configuration file.
- 
- 
-![Alt text](pic/Picture8.png?raw=true "Title")
+In this lab, the connection test will be done by SSL connection, thus, it is required to enable SSL connection on Apache server. In the "/etc/apache2" directory, you can see “apache2.conf”, which specifies the apache configuration. Those "include" are used to add other configuration file. 
 
-As we can see, there are several configurations in Apache folder.
-In the old versions of Apache, there is only one configuration named “httpd.conf”.
-And as for the latest version, the main configuration file is “apache2.conf”. We can take a quick look of this file.
+```
+# Include module configuration:
+IncludeOptional mods-enabled/*.load
+IncludeOptional mods-enabled/*.conf
 
-![Alt text](pic/Picture9.png?raw=true "Title")
+# Include list of ports to listen on
+Include ports.conf
+```
 
-
-As we can see, there are many “includes” command in this file. It means the apache server will firstly read this file and the other configuration files will be linked using these “include” command.
-
-As for the SSL configuration file, it’s in the “sites-enabled” folder.
-We can use this command to create a configuration file for SSL connection.
+To enable SSL connection, copy "default-ssl.conf" from "sites-available" to "sites-enabled" directory.
 
 ```
 sudo cp /etc/apache2/sites-available/default-ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
 ```
 
-Then we modify this default-ssl.conf like follows:
+Then, use 
 
-![Alt text](pic/Picture10.png?raw=true "Title")
+```
+ifconfig
+```
+
+to find IP address, and modify "default-ssl.conf" as follows:
 
 
-We temporary named our server name as jhuws.edu, and the digital certificate name is jhuws.crt, the private key of digital certificate name is jhuws.key. Of course you can make the name as you like, but make sure to use the same name in the later.
-And the 172.17.2.41 is the IP address of our web server, you can use command “ifconfig” to check it out. The “443” is the port number for SSL connection.
-You should also use this command
+```
+<IfModule mod_ssl.c>
+        <VirtualHost 172.17.2.18:443>
+                ServerAdmin webmaster@localhost
+                ServerName www.jhuws.edu
+                DocumentRoot /var/www/html
+
+                # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+                # error, crit, alert, emerg.
+                # It is also possible to configure the loglevel for particular
+                # modules, e.g.
+                #LogLevel info ssl:warn
+
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+                # For most configuration files from conf-available/, which are
+                # enabled or disabled at a global level, it is possible to
+                # include a line for only one particular virtual host. For example the
+                # following line enables the CGI configuration for this host only
+                # after it has been globally disabled with "a2disconf".
+                #Include conf-available/serve-cgi-bin.conf
+
+                #   SSL Engine Switch:
+                #   Enable/Disable SSL for this virtual host.
+                SSLEngine on
+
+                #   A self-signed (snakeoil) certificate can be created by installing
+                #   the ssl-cert package. See
+                #   /usr/share/doc/apache2/README.Debian.gz for more info.
+                #   If both key and certificate are stored in the same file, only the
+                #   SSLCertificateFile directive is needed.
+                SSLCertificateFile      /etc/ssl/certs/jhuws.crt
+                SSLCertificateKeyFile /etc/ssl/private/jhuws.key
+```
+
+In line 2, replace "_default_" by your IP address. “443” is the port number for SSL connection. In line 4, insert your ServerName. Note that this should be consistent with your previous setting while generating CSR. In line 32 and 33, change the directory of where your certificate and private key are stored. Save all these changes and use
 
 ```
 sudo a2enmod ssl
 ```
 
-to enable the SSL module of Apache2 if there prompt the problem that you try to connect 443 port to our web server while it refuse.
-Then restart the apache2 service using this command”service apache2 restart”.
+to enable the SSL module of Apache2. Then, restart apache2 server using command:
+
+```
+sudo service apache2 restart
+```
 
 ## Connection test
 

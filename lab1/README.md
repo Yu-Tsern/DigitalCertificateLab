@@ -1,294 +1,43 @@
 # Lab1 Issue and Revoke Certificates
-
-- Introduction
-  - LAMP
-  - Certificate Authority
-- Implementation
-  - Network topology on GENI
-  - Setup LAMP on GENI
-    - Install MySQL
-    - Install Apache
-    - Install PHP
-    - Install the extension packets of PHP and MySQL
-    - Enable SSL connection of Apache
-  - Install and enable browser on GENI
-    - For Windows operation system:
-    - For MacOS operation system
-    - For other Linux operation system
-    - Test Apache service and PHP service
-      - Test Apache service
-      - Test PHP service
-  - Set up certificate authority on GENI
-    - Build Certificate Authority
-    - On web server node
-  - Issue a digital certificate
-  - Result of issued digital certificate
-  - Revoke a digital certificate
-  - Result of revoke a digital certificate
+  
+## Content
+  - Introduction to Certificate Authority
+  - Introduction to LAMP
+  - Network Topology
+  - Distribution of Digital Certificates
+  - LAMP Installation
+    - MySQL
+    - Apache
+    - PHP
+    - PHP and MySQL Extensions
+    - SSL connection of Apache
+  - Connection test
+    - Curl
+    - Browser
+  - Certificate revokation
 
 
-# Introduction
+## Introduction to certificate authority
+Certificate Authority is a trusted third party that issues electronic documents that verify a digital entity’s identification on the Internet. 
+In cryptography mean, certificate authority verifies the ownership of the public key of the named subject of the certificate.
 
-## LAMP
+
+## Introduction to LAMP
 
 LAMP is short for the software bundle of Linux operating system, Apache HTTP Server, MySQL database management system and PHP programming language.
 This bundle can realize the role and function of a web server, which can drive Web applications. Although not actually designed to work together, these open source software is comparatively simple and easy to use.
 Besides this four software, this software bundle can also be combined with many other free and open-source software packages
 
-## Certificate Authority
-Certificate Authority is a trusted third party that issues electronic documents that verify a digital entity’s identification on the Internet. 
-In cryptography mean, certificate authority verifies the ownership of the public key of the named subject of the certificate.
 
-# Implementation
 
-## Network topology on GENI
+## Network topology
 
 ![Alt text](pic/Picture1.png?raw=true "Title")
 
 
 The node named CA will be the certificate authority in this experiment. The node named WS will be the web server in this experiment and we will install LAMP on this node to enable it to be a web server. Notice: we must wait for all the GENI node turn green, which means the remote machines are ready for us to use, then we can continue the following steps. This may take a while.
 
-## Setup LAMP on GENI
-We already have the GENI node. In other words, we already have a Linux operation system, so we only need to install the remaining Apache, MySQL, and PHP. We should pay attention to the installation order of LAMP, I recommend we install the MySQL and Apache firstly, leave the PHP in the end. The order of installation of MySQL and Apache can be reversed because they are not depending on each other. However, the PHP must be installed after we finish the installation of MySQL and Apache because PHP server depends on the services of Apache and MySQL.
-Using SSH log onto the WS node. The following installation will be on this node.
-Before installation, we should download the package lists from the repositories and "updates" them to get information on the newest versions of packages and their dependencies.
-Command: “sudo apt-get update”
-
-###### Install MySQL:
-```
-sudo apt-get install mysql-server
-```
-
-![Alt text](pic/Picture2.png?raw=true "Title")
-
-
-
-In this process, it will ask you to enter the password for the MySQL administrator, set up the password in this prompt window.
-
-![Alt text](pic/Picture3.png?raw=true "Title")
-
-
-After installation of MySQL, we should check whether this is installed successfully.
-
-![Alt text](pic/Picture4.png?raw=true "Title")
-
-
-```
-sudo netstat -tap | grep mysql
-```
-
-If it shows the listening port of MySQL as following, then we prove it is installed successfully.
- 
-###### Install Apache
-
-```
-sudo apt-get install apache2
-```
-
-![Alt text](pic/Picture5.png?raw=true "Title")
-
-We can run the browser to check whether it is installed successfully or not. But don’t hurry; we need to involve third party software to enable the graphics showing on GENI node. We will cover this content in the following.
-
-###### Install PHP
-
-```
-sudo apt-get install php5 libapache2-mod-php5
-```
-
-![Alt text](pic/Picture6.png?raw=true "Title")
-
-
-After this installation, it will create a folder named “www” under var. This folder will be reserve the source code of the website.
- 
-![Alt text](pic/Picture7.png?raw=true "Title")
-
-
-###### Install extension packages of PHP and MySQL
-
-```
-Command:” sudo apt-get install php-mysql php-curl php-gd php-intl php-pear php-imagick php-imap php5-mcrypt php5-memcache php5-ming php5-ps php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl
-```
-
-
-
-Notice: the GENI node is initiated with an Ubuntu operation system following its default setting. If you choose other operation systems rather the default operation system, there might be a warning message showing on the screen and it may be failed to initiate the GENI nodes. Therefore there is no need to set up another operation system, but if you do so, either it will not affect much in this experiment. 
-
-###### Enable SSL connection of Apache
-
-Because we need to install the digital certificate later, so we need to enable SSL connection of Apache.
-First, just a brief introduction of Apache configuration file.
- 
- 
-![Alt text](pic/Picture8.png?raw=true "Title")
-
-As we can see, there are several configurations in Apache folder.
-In the old versions of Apache, there is only one configuration named “httpd.conf”.
-And as for the latest version, the main configuration file is “apache2.conf”. We can take a quick look of this file.
-
-![Alt text](pic/Picture9.png?raw=true "Title")
-
-
-As we can see, there are many “includes” command in this file. It means the apache server will firstly read this file and the other configuration files will be linked using these “include” command.
-
-As for the SSL configuration file, it’s in the “sites-enabled” folder.
-We can use this command to create a configuration file for SSL connection.
-
-```
-sudo cp /etc/apache2/sites-available/default-ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
-```
-
-Then we modify this default-ssl.conf like follows:
-
-![Alt text](pic/Picture10.png?raw=true "Title")
-
-
-We temporary named our server name as jhuws.edu, and the digital certificate name is jhuws.crt, the private key of digital certificate name is jhuws.key. Of course you can make the name as you like, but make sure to use the same name in the later.
-And the 172.17.2.41 is the IP address of our web server, you can use command “ifconfig” to check it out. The “443” is the port number for SSL connection.
-You should also use this command
-
-```
-sudo a2enmod ssl
-```
-
-to enable the SSL module of Apache2 if there prompt the problem that you try to connect 443 port to our web server while it refuse.
-Then restart the apache2 service using this command”service apache2 restart”.
-
-## Install and enable browser on USER node
-
-We choose Firefox browser in this experiment. Of course, you can choose other browsers if you like. This part should be done on user node.
-
-```
-sudo apt-get install firefox
-```
-
-![Alt text](pic/Picture11.png?raw=true "Title")
-
-
-The operation of next step will be different for windows, Mac and Linux operation systems. For windows and MacOS operation systems, we need to depend on third party software to enable the graphics display on GENI node.
-
-###### For Windows operation system:
-Install the Xming software on your local operation system. Xming is an X11 display server for Microsoft Windows operating systems. Then run it to start the X server. You should see the Xming icon in the taskbar if it is running.
-
-![Alt text](pic/Picture12.png?raw=true "Title")
-
-
-Then use PuTTY to log onto the GENI node. 
-You can see the instruction here about how to log onto GENI node using PuTTY.
-http://groups.geni.net/geni/wiki/HowTo/LoginToNodes
-Remember to click the option on X11 option besides the other steps of logging onto GENI node using PuTTY.
-
-
-![Alt text](pic/Picture13.png?raw=true "Title")
-
-
-Then we can run the graphics display on GENI node on Windows operation system.
-
-```
-firefox
-```
-![Alt text](pic/Picture14.png?raw=true "Title")
-
-
-Wait for a second, and then we can see the browser GUI display is shown with the help of Xming
-
-![Alt text](pic/Picture15.png?raw=true "Title")
-
-
-
-###### For MacOS operation system
-
-Install XQuartz on your Mac. XQuartz is an X server designed for MacOS.
- 
-![Alt text](pic/Picture16.png?raw=true "Title")
-
- 
-Right click on the XQuartz icon in the dock and select Applications > Terminal. This should bring up a new xterm terminal windows.
-
-![Alt text](pic/Picture17.png?raw=true "Title")
-
-Then make an ssh connection to the GENI node on this terminal windows.
-
-![Alt text](pic/Picture18.png?raw=true "Title")
-
- 
-We can enable the graphics display of browser on GENI node with the help of XQuartz software.
-
-```
-firefox
-```
-
-![Alt text](pic/Picture19.png?raw=true "Title")
- 
-###### For other Linux operation system
-It’s much simple when you are using Linux operation system.
-Just ssh into the Linux system of your choice using the -Y argument.
-
-![Alt text](pic/Picture20.png?raw=true "Title")
-
-
-Then run Firefox browser.
-```
-firefox
-```
- 
-![Alt text](pic/Picture21.png?raw=true "Title")
-
-## Test Apache service and PHP service
-
-Now because we already installed and enable the browser. We can test the Apache service and PHP service installed before.
-###### Test Apache service
-
-Open the Firefox browser using command 
-
-```
-firefox
-```
-
-Enter “127.0.0.1” on the browser. If it shows the following image then it means the Apache service is installed successfully.
-
-![Alt text](pic/Picture22.png?raw=true "Title")
-
-###### Test PHP service
-
-We can write a simple PHP website and then run it to test whether the PHP service is installed successfully or not.
-For the convenience, we can use the WinSCP software to write PHP source code. The instruction of how to log onto GENI node using WinSCP can be found in this link:
-http://mountrouidoux.people.cofc.edu/CyberPaths/winscp.html
- 
-![Alt text](pic/Picture23.png?raw=true "Title")
-
-
-We need to give the privilege to edit the "www" folder under the /var. As I mentioned before, "www" folder contains the website source code.
-```
-sudo chmod 777 /var/www
-```
-
-![Alt text](pic/Picture24.png?raw=true "Title")
-
-
-
-Under the “www/html”folder, create a file named “info.php” and then write the following code into it:
-
-```
-<?php
-phpinfo();
-?>
-```
-![Alt text](pic/Picture25.png?raw=true "Title")
-
-
-And then we need to restart the Apache service.
-```
-sudo /etc/init.d/apache2 restart
-```
-![Alt text](pic/Picture26.png?raw=true "Title")
- 
-
-Run the browser and this time enters "127.0.0.1/info.php" into the browser. If we can see the relative configuration information of PHP then it means that PHP service is installed successfully.
-
-![Alt text](pic/Picture27.png?raw=true "Title")
-
-
-## Set up certificate authority on GENI
+## Distribution of digital certificates
 
 OpenSSL is a cryptographic toolkit for SSL and TLS. In this lab, it will be used to:
 
@@ -314,7 +63,7 @@ You will see three files under this directory.
 “certs” stores the digital certificate of this machine. “private” stores private keys. “openssl.cnf” specifies the configuration of OpenSSL.
 
 
-###### Build Certificate Authority
+###### Certificate Authority Configuration
 Before this node can function as a certificate authority, some preparations need to be done. First, "index.txt", "newcerts", and "serial" should be created in this directory.
 
 ```
@@ -459,7 +208,7 @@ Common Name (e.g. server FQDN or YOUR name) []:jhuca.edu
 Email Address []:
 ```
 
-###### Generating certificate signing request
+###### Generate certificate signing request
 
 Now, the CA node is ready to sign WS's certificate. The next step is to connect to the WS node and generate a certificate signing request(CSR). The following commands are used to generate private key and corresponding CSR.
 
@@ -542,8 +291,6 @@ If you're using the same file name as we did in the previous steps, it is ”chm
 
 ![Alt text](pic/Picture37.png?raw=true "Title")
 
-![Alt text](pic/Picture38.png?raw=true "Title") 
-
 
 ###### Sign a CSR
 
@@ -605,6 +352,252 @@ To enable WS’s certificate, the certificate and private key should be put into
 sudo cp jhuws.crt /etc/ssl/certs
 sudo cp jhuws.key /etc/ssl/private
 ```
+
+## LAMP Installation
+
+Since GENI VMs are linux-powered devices, only Apache, MySQL, and PHP need to be install. Note that the order of installation does matter because PHP server depends on the services of Apache and MySQL. After using SSH to connect to WS node, use  
+
+```
+sudo apt-get update
+```
+
+to update the latest package lists and their dependency.
+
+
+###### Install MySQL:
+
+```
+sudo apt-get install mysql-server
+```
+
+During the installation, it will ask you to setup a password for MySQL administrator.
+
+![Alt text](pic/Picture3.png?raw=true "Title")
+
+When the installation is completed, check whether it is installed successfully.
+
+
+```
+sudo netstat -tap | grep mysql
+```
+
+You should see a message similar to the following one, which means there is a listening port of mysql enabled.
+
+```
+tcp        0      0 localhost:mysql         *:*                     LISTEN      18658/mysqld  
+```
+
+ 
+###### Install Apache
+
+```
+sudo apt-get install apache2
+```
+
+![Alt text](pic/Picture5.png?raw=true "Title")
+
+We can run the browser to check whether it is installed successfully or not. But don’t hurry; we need to involve third party software to enable the graphics showing on GENI node. We will cover this content in the following.
+
+###### Install PHP
+
+```
+sudo apt-get install php5 libapache2-mod-php5
+```
+
+![Alt text](pic/Picture6.png?raw=true "Title")
+
+
+After this installation, it will create a folder named “www” under var. This folder will be reserve the source code of the website.
+ 
+![Alt text](pic/Picture7.png?raw=true "Title")
+
+
+###### Install PHP and MySQL extensions
+
+```
+Command:” sudo apt-get install php-mysql php-curl php-gd php-intl php-pear php-imagick php-imap php5-mcrypt php5-memcache php5-ming php5-ps php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl
+```
+
+
+
+Notice: the GENI node is initiated with an Ubuntu operation system following its default setting. If you choose other operation systems rather the default operation system, there might be a warning message showing on the screen and it may be failed to initiate the GENI nodes. Therefore there is no need to set up another operation system, but if you do so, either it will not affect much in this experiment. 
+
+###### Enable Apache SSL connection
+
+Because we need to install the digital certificate later, so we need to enable SSL connection of Apache.
+First, just a brief introduction of Apache configuration file.
+ 
+ 
+![Alt text](pic/Picture8.png?raw=true "Title")
+
+As we can see, there are several configurations in Apache folder.
+In the old versions of Apache, there is only one configuration named “httpd.conf”.
+And as for the latest version, the main configuration file is “apache2.conf”. We can take a quick look of this file.
+
+![Alt text](pic/Picture9.png?raw=true "Title")
+
+
+As we can see, there are many “includes” command in this file. It means the apache server will firstly read this file and the other configuration files will be linked using these “include” command.
+
+As for the SSL configuration file, it’s in the “sites-enabled” folder.
+We can use this command to create a configuration file for SSL connection.
+
+```
+sudo cp /etc/apache2/sites-available/default-ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
+```
+
+Then we modify this default-ssl.conf like follows:
+
+![Alt text](pic/Picture10.png?raw=true "Title")
+
+
+We temporary named our server name as jhuws.edu, and the digital certificate name is jhuws.crt, the private key of digital certificate name is jhuws.key. Of course you can make the name as you like, but make sure to use the same name in the later.
+And the 172.17.2.41 is the IP address of our web server, you can use command “ifconfig” to check it out. The “443” is the port number for SSL connection.
+You should also use this command
+
+```
+sudo a2enmod ssl
+```
+
+to enable the SSL module of Apache2 if there prompt the problem that you try to connect 443 port to our web server while it refuse.
+Then restart the apache2 service using this command”service apache2 restart”.
+
+## Connection test
+
+We choose Firefox browser in this experiment. Of course, you can choose other browsers if you like. This part should be done on user node.
+
+```
+sudo apt-get install firefox
+```
+
+![Alt text](pic/Picture11.png?raw=true "Title")
+
+
+The operation of next step will be different for windows, Mac and Linux operation systems. For windows and MacOS operation systems, we need to depend on third party software to enable the graphics display on GENI node.
+
+###### For Windows operation system:
+Install the Xming software on your local operation system. Xming is an X11 display server for Microsoft Windows operating systems. Then run it to start the X server. You should see the Xming icon in the taskbar if it is running.
+
+![Alt text](pic/Picture12.png?raw=true "Title")
+
+
+Then use PuTTY to log onto the GENI node. 
+You can see the instruction here about how to log onto GENI node using PuTTY.
+http://groups.geni.net/geni/wiki/HowTo/LoginToNodes
+Remember to click the option on X11 option besides the other steps of logging onto GENI node using PuTTY.
+
+
+![Alt text](pic/Picture13.png?raw=true "Title")
+
+
+Then we can run the graphics display on GENI node on Windows operation system.
+
+```
+firefox
+```
+![Alt text](pic/Picture14.png?raw=true "Title")
+
+
+Wait for a second, and then we can see the browser GUI display is shown with the help of Xming
+
+![Alt text](pic/Picture15.png?raw=true "Title")
+
+
+
+###### For MacOS operation system
+
+Install XQuartz on your Mac. XQuartz is an X server designed for MacOS.
+ 
+![Alt text](pic/Picture16.png?raw=true "Title")
+
+ 
+Right click on the XQuartz icon in the dock and select Applications > Terminal. This should bring up a new xterm terminal windows.
+
+![Alt text](pic/Picture17.png?raw=true "Title")
+
+Then make an ssh connection to the GENI node on this terminal windows.
+
+![Alt text](pic/Picture18.png?raw=true "Title")
+
+ 
+We can enable the graphics display of browser on GENI node with the help of XQuartz software.
+
+```
+firefox
+```
+
+![Alt text](pic/Picture19.png?raw=true "Title")
+ 
+###### For other Linux operation system
+It’s much simple when you are using Linux operation system.
+Just ssh into the Linux system of your choice using the -Y argument.
+
+![Alt text](pic/Picture20.png?raw=true "Title")
+
+
+Then run Firefox browser.
+```
+firefox
+```
+ 
+![Alt text](pic/Picture21.png?raw=true "Title")
+
+## Test Apache service and PHP service
+
+Now because we already installed and enable the browser. We can test the Apache service and PHP service installed before.
+###### Test Apache service
+
+Open the Firefox browser using command 
+
+```
+firefox
+```
+
+Enter “127.0.0.1” on the browser. If it shows the following image then it means the Apache service is installed successfully.
+
+![Alt text](pic/Picture22.png?raw=true "Title")
+
+###### Test PHP service
+
+We can write a simple PHP website and then run it to test whether the PHP service is installed successfully or not.
+For the convenience, we can use the WinSCP software to write PHP source code. The instruction of how to log onto GENI node using WinSCP can be found in this link:
+http://mountrouidoux.people.cofc.edu/CyberPaths/winscp.html
+ 
+![Alt text](pic/Picture23.png?raw=true "Title")
+
+
+We need to give the privilege to edit the "www" folder under the /var. As I mentioned before, "www" folder contains the website source code.
+```
+sudo chmod 777 /var/www
+```
+
+![Alt text](pic/Picture24.png?raw=true "Title")
+
+
+
+Under the “www/html”folder, create a file named “info.php” and then write the following code into it:
+
+```
+<?php
+phpinfo();
+?>
+```
+![Alt text](pic/Picture25.png?raw=true "Title")
+
+
+And then we need to restart the Apache service.
+```
+sudo /etc/init.d/apache2 restart
+```
+![Alt text](pic/Picture26.png?raw=true "Title")
+ 
+
+Run the browser and this time enters "127.0.0.1/info.php" into the browser. If we can see the relative configuration information of PHP then it means that PHP service is installed successfully.
+
+![Alt text](pic/Picture27.png?raw=true "Title")
+
+
+
 
 
 ## Result of issued digital certificate

@@ -1,21 +1,24 @@
 # Lab1 Issue and Revoke Certificates
   
 ## Content
-  - Introduction to Certificate Authority
-  - Introduction to LAMP
-  - Network Topology
-  - Distribution of Digital Certificates
-  - LAMP Installation
-    - MySQL
-    - Apache
-    - PHP
-    - PHP and MySQL Extensions
-    - SSL connection of Apache
-  - Connection test
-    - Curl
-    - Browser
-  - Certificate revokation
-
+  - [Introduction to Certificate Authority](https://github.com/Yu-Tsern/DigitalCertificateLab/tree/master/lab1#introduction-to-certificate-authority)
+  - [Introduction to LAMP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#introduction-to-lamp)
+  - [Network Topology](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#network-topology)
+  - [Distribution of Digital Certificates](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#distribution-of-digital-certificates)
+  - [LAMP Installation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#lamp-installation)
+    - [MySQL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-mysql)
+    - [Apache](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-apache)
+    - [PHP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-php)
+    - [PHP and MySQL Extensions](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-php-and-mysql-extensions)
+    - [Writing simple PHP websites](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#write-a-simple-php-website)
+    - [SSL connection of Apache](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#enable-apache-ssl-connection)
+  - [Testing Certificate Configuration](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#connection-test)
+    - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#curl)
+    - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#browser)
+  - [Certificate revocation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#revoke-a-digital-certificate)
+  - [Testing Certificate Revocation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#connect-to-ws-after-the-certificate-was-revoked)
+    - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#curl-1)
+    - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#browser-1)
 
 ## Introduction to certificate authority
 Certificate Authority is a trusted third party that issues electronic documents that verify a digital entity’s identification on the Internet. 
@@ -733,11 +736,7 @@ You will see there's an error complaining the certificate was revoked.
 
 ###### Browser
 
-Unfortunately, Firefox removed the user interface of importing CRL, thus, we are not able to revoke a certificate on our own. Information can be found in the following website.
-
-https://wiki.mozilla.org/CA:ImprovingRevocation#Preload_Revocations_of_Intermediate_CA_Certificates
-
-However, you can still try the a tool, MobaXterm, to configure CRL manually.
+Unfortunately, Firefox removed the user interface of importing CRL, thus, we are not able to revoke a certificate on our own. Information can be found in the following website. https://wiki.mozilla.org/CA:ImprovingRevocation#Preload_Revocations_of_Intermediate_CA_Certificates However, you can still try the a tool, MobaXterm, to configure CRL manually.
 
  ![Alt text](pic/Picture68.png?raw=true "Title")
 

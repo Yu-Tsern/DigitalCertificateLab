@@ -366,15 +366,6 @@ During the installation, it will ask you to setup a password for MySQL administr
 Package configuration
 
 
-
-
-
-
-
-
-
-
-
     ┌───────────────────────────┤ Configuring mysql-server-5.7 ├────────────────────────────┐
     │ While not mandatory, it is highly recommended that you set a password for the MySQL   │ 
     │ administrative "root" user.                                                           │ 
@@ -388,13 +379,6 @@ Package configuration
     │                                        <Ok>                                           │ 
     │                                                                                       │ 
     └───────────────────────────────────────────────────────────────────────────────────────┘ 
-                                                                                              
-
-
-
-
-
-
 
 
 ```
@@ -452,6 +436,34 @@ Command:” sudo apt-get install php-intl php-imagick php-imap php5-mcrypt php5-
 ```
 
 Notice: the GENI node is initiated with an Ubuntu operation system following its default setting. If you choose other operation systems rather the default operation system, there might be a warning message showing on the screen and it may fail to initiate the GENI nodes.
+
+###### Write a simple PHP website
+
+We will write a simple PHP website and try to connect to it in order to test whether the PHP service was installed successfully. You can use whatever way you like to write the PHP source code. If you're trying to edit it directly, instructions of how to use WinSCP can be found in this link:
+
+http://mountrouidoux.people.cofc.edu/CyberPaths/winscp.html
+ 
+Recall that "www" stores the website source code. To make change to this file, first change its permission.
+
+```
+sudo chmod 777 /var/www
+```
+
+Second, create a file named “info.php” under the “www/html” folder, then copy these codes into this file:
+
+```
+<?php
+phpinfo();
+?>
+```
+
+Third, restart the Apache service.
+
+```
+sudo /etc/init.d/apache2 restart
+```
+
+To connect to it, some other configurations are needed. This part will be covered in the next section. 
 
 ###### Enable Apache SSL connection
 
@@ -581,7 +593,7 @@ If the HTML reponse still appears, congratulations! You can step further to test
 
 ###### Browser
 
-We choose Firefox browser in this experiment. Of course, you can choose other browsers if you like. This part should be done on user node.
+We choose Firefox browser in this experiment. Of course, you can choose other browsers if you like. This part should be done on both WS and USER node.
 
 ```
 sudo apt-get install firefox
@@ -589,7 +601,8 @@ sudo apt-get install firefox
 
 The following steps vary. They depend on your operating system. For windows and MacOS, they have to rely on third party softwares to display graphical interface.
 
-###### For Windows operation system:
+###### Windows:
+
 First, install Xming locally. Xming is an X11 display server for Microsoft Windows. Second, launch the X server. You should see the Xming icon in the taskbar if it is up and running. Third, use PuTTY to connect to the user node. You can read the instruction here if you are not familiar with PuTTY.
 
 http://groups.geni.net/geni/wiki/HowTo/LoginToNodes
@@ -605,35 +618,12 @@ firefox
 It might take a while, just be patient and you can see your browser displayed with the help of Xming.
 
 
-###### For MacOS operation system
+###### Mac
 
 First, install XQuartz on your Mac. XQuartz is an X server designed for MacOS. Second, open Xquartz with terminal. You should see a xterm window displaying something similar to
 
 ```
 bash-3.2$
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```
 
 Third, make an ssh connection to the user node in this terminal. Now, we are able to display browser in a graphical interface. Use this command to launch the browser:
@@ -642,198 +632,122 @@ Third, make an ssh connection to the user node in this terminal. Now, we are abl
 firefox
 ```
 
-###### For other Linux operation system
+###### Linux
+
 It’s much simpler when you are using Linux rather than other operation systems. Just ssh into the Linux system of your choice using the -Y argument. Then, launch your Firefox.
 
 ```
 firefox
 ```
- 
-## Test Apache service and PHP service
 
-Now, we are already to use browser to test our server.
+###### Test Apache locally
 
-###### Test Apache service
-
-Open the Firefox browser using command 
+Now, we are ready to test our server through browser. Open Firefox on the WS node using command 
 
 ```
 firefox
 ```
 
-Enter “127.0.0.1” on the browser. If it shows the following image then it means the Apache service is installed successfully.
-
-![Alt text](pic/Picture22.png?raw=true "Title")
-
-###### Test PHP service
-
-We can write a simple PHP website and then run it to test whether the PHP service is installed successfully or not.
-For the convenience, we can use the WinSCP software to write PHP source code. The instruction of how to log onto GENI node using WinSCP can be found in this link:
-http://mountrouidoux.people.cofc.edu/CyberPaths/winscp.html
- 
-![Alt text](pic/Picture23.png?raw=true "Title")
+Put “127.0.0.1” in the address bar and press ENTER. If it shows the "Apache2 Ubuntu Default Page," the Apache service is installed successfully.
 
 
-We need to give the privilege to edit the "www" folder under the /var. As I mentioned before, "www" folder contains the website source code.
-```
-sudo chmod 777 /var/www
-```
+###### Test PHP locally
 
-![Alt text](pic/Picture24.png?raw=true "Title")
+In this step, we will try to connect to the simple PHP website we wrote to test whether the PHP server functions correctly. First, run the browser on the WS node. Second, put "127.0.0.1/info.php" into the address bar. If we can see configuration information of PHP then we know the PHP service is installed successfully.
 
 
+###### Connection test on USER node
 
-Under the “www/html”folder, create a file named “info.php” and then write the following code into it:
-
-```
-<?php
-phpinfo();
-?>
-```
-![Alt text](pic/Picture25.png?raw=true "Title")
-
-
-And then we need to restart the Apache service.
-```
-sudo /etc/init.d/apache2 restart
-```
-![Alt text](pic/Picture26.png?raw=true "Title")
- 
-
-Run the browser and this time enters "127.0.0.1/info.php" into the browser. If we can see the relative configuration information of PHP then it means that PHP service is installed successfully.
-
-![Alt text](pic/Picture27.png?raw=true "Title")
-
-
-
-Open the browser on user node. You can refer the instruction before about how to run and open a browser on GENI node.
-We visit the jhuws.edu/info.php first.
- 
-![Alt text](pic/Picture50.png?raw=true "Title") 
-
-
-It works right, and then we install the digital certificate. We go to the preference option of the browser.
-
-![Alt text](pic/Picture51.png?raw=true "Title")
-
- 
-Then go to the Advanced, Certificates options. Click on “View Certificates”
+Open the browser on user node and visit "jhuws.edu/info.php." If it shows you the same web page when testing PHP locally on the WS node. You can now try to install the digital certificate. Go to "preference >> Advanced >> Certificates >> View Certificates" in the browser menu.
 
 ![Alt text](pic/Picture52.png?raw=true "Title")
 
-
-Then import the cacert.crt file we put on user node before.
+Then, import the "cacert.crt" we copy to user node before.
 
 ![Alt text](pic/Picture53.png?raw=true "Title")
 
-
-Trust this certificate authority we build by our own.
+Trust this certificate authority we build on our own.
 
 ![Alt text](pic/Picture54.png?raw=true "Title")
 
-
-Now we can see our certificate authority is in the list of certificate authorities.
+Now we can see our certificate authority is in the list of trusted certificate authorities.
  
 ![Alt text](pic/Picture55.png?raw=true "Title")
 
-
-We visit jhuws.edu/info.php firstly, we can see the connection is unsecure.
+Visit "jhuws.edu/info.php" again, you can see there is a exclamation mark in the address bar, which means the connection is not secure.
 
 ![Alt text](pic/Picture56.png?raw=true "Title")
 
- 
-Then we visit https://jhuws.edu/info.php
+Try to use "https" instead of "http"
 
 ![Alt text](pic/Picture57.png?raw=true "Title")
 
-
-And this time we can see there appears a green lock and remind us now it’s a secure connection.
-We can view the details of this connection by click the “>”.
+You will see the exclamation mark was replaced by a green lock. The connection is now secure. We can view more details of this connection by click “>”.
 
 ![Alt text](pic/Picture58.png?raw=true "Title")
 
-
-The information we put in when making the digital certificate is shown in this display.
-By now, we have already finished the experiment of building a certificate authority and issue a digital certificate.
+The information we put in when making the digital certificate is now shown in this window. So far, we have already finished the experiment of building a certificate authority and issuing a digital certificate.
 
 ## Revoke a digital certificate
-Then we can try to revoke the digital certificate to see how it works and what is the result it will turn out.
-To revoke the digital certificate we issue before, we should log onto the ca node, which is the certificate authority.
-Use this command to revoke the digital certificate we issued before. The name of digital certificate we issued before is “jhuws.crt”
+
+Now, try to revoke the digital certificate. First, connect to the CA node and use this command to revoke the digital certificate. Recall that the name of the digital certificate we issued before is “jhuws.crt”
+
 ```
 openssl ca -revoke jhuws.crt
 ```
 
-![Alt text](pic/Picture59.png?raw=true "Title")
+You can see two messages, "Revoking Certificate _some number_" and "Data Base Updated." To make sure it is the one you expected, use 
 
-We can use this command”cat index.txt” to check the index of our digital certificate. It’s 03, so everything is going right.
+```
+cat index.txt
+```
 
-![Alt text](pic/Picture60.png?raw=true "Title")
+to see detail information of the certificate with that number. Now, create a new Certificate Revocation List(CRL) using this command:
 
-
-And we should renew the crl, which is short for Certificate Revocation List. The digital certificate we revoked will be given the index and record in this list.
-Use this command:
 ```
 openssl ca -gencrl -out thisca.crl
 ```
-to generate the index of the digital certificate we just revoke.
-We can have a look at the thisca.crl file.
 
-![Alt text](pic/Picture61.png?raw=true "Title")
+Recall that CRL is the filw that stores all the revoked certificate. You can take a look at the CRL by using
 
- 
-It stores the Certificate Revocation List.
-Then we need add content ”00” into ”crlnumber”, to let the crl start to record.
-Each time we revoke a digital certificate, it will add one to itself.
+```
+cat thisca.crl
+```
 
-![Alt text](pic/Picture62.png?raw=true "Title")
-
- 
-I have revoked twice the digital certificate, so the number shown is 02.
-Then we have successfully revoked a digital certificate we issued before.
+Then, we initialize the ”crlnumber” to "00." Everytime a certificate is revoked, the number will increase by one. Finally, the digital certificate we issued before is successfully revoked.
 
 
-## Connect after certificate is revoked
+## Connect to WS after the certificate was revoked
 
-To see the result after we revoke an issued digital certificate. Because we are actually not using network to verify. Therefore we need to import the new cacert.crt onto the user node.
-Remove the old cacert.crt and import the new cacert.crt. As the same we have done before, we actually move the file “cacert.pem”, but we need to change the extension”.pem” to “.crt”.
- 
- ![Alt text](pic/Picture63.png?raw=true "Title")
- 
- ![Alt text](pic/Picture64.png?raw=true "Title")
- 
- 
-Also we should move the thisca.crl which stores the Certificate Revocation List to the user node.
+Remove the old "cacert.crt" and copy the new "cacert.pem" to the USER node. As we have done before, change the extension from "pem to "crt." Additionally, move the Certificate Revokation List, "thisca.crl," to the USER node. 
 
- ![Alt text](pic/Picture65.png?raw=true "Title")
- 
-Because our certificate authority is offline, therefore we need to move these files manually.
-Then we can see the result after we revoke a digital certificate. We still use curl tool to find out.
-We use this command:
+###### CURL
+
+Then, try to connect to the WS node with curl. Note that the CRL is included this time. 
+
 ```
 curl https://jhuws.edu --cacert cacert.crt --crlfile thisca.crl
 ```
-to visit our site we build before. We need the options”—cacert” and “—crlfile” to include the ca document and crl document manually.
-
- ![Alt text](pic/Picture66.png?raw=true "Title")
-
  
-Now we can see the digital certificate has already been revoked.
-As for the Firefox browser we installed before, we also need to update the ca document and crl document. But Firefox browser has already remove the user interface on Firefox to import the crl document, so we can’t see the result on Firefox since we are the offline certificate authority and need us to import the ca document and crl document manually.
+You will see there's an error complaining the certificate was revoked. 
+
+###### Browser
+
+Unfortunately, Firefox removed the user interface of importing CRL, thus, we are not able to revoke a certificate on our own. Information can be found in the following website.
 
 https://wiki.mozilla.org/CA:ImprovingRevocation#Preload_Revocations_of_Intermediate_CA_Certificates
 
- ![Alt text](pic/Picture67.png?raw=true "Title")
- 
-
-Revise
-You also can try the tool named MobaXterm to log in GENI node and move the file.
+However, you can still try the a tool, MobaXterm, to configure CRL manually.
 
  ![Alt text](pic/Picture68.png?raw=true "Title")
 
-As you can see from the above graph, on the left part of this tool you can move the file and the right part of this tool is the terminal. It would be more convenient for your experiment.
-Assignment
-1 Google announces to mark the sites without HTTPS in chrome as non-secure by the end of January 2017, which means HTTPS is now mandatory for secure data in chrome. What’s the reason for Google to do so?
-2 Find out one of the digital certificate stored on your laptop. Screenshot the digital certificate you found on your laptop.
-3 X.509 is a popular SSL digital certificate standard, what content is included in the digital certificate in X.509 standard? Check the content in our digital certificate, screen shot it.
+As you can see from the screenshot, you can move files on the leften side of the window, and there's a terminal on the righten side.
+
+## Assignments
+
+1. Google announces to mark the sites without HTTPS in chrome as non-secure by the end of January 2017, which means HTTPS is now mandatory for secure data in chrome. What’s the reason for Google to do so?
+
+2. Find out one of the digital certificate stored on your laptop. Screenshot the digital certificate you found on your laptop.
+
+3. X.509 is a popular SSL digital certificate standard, what content is included in the digital certificate in X.509 standard? Check the content in our digital certificate, screen shot it.
 

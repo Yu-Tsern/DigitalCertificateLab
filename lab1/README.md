@@ -517,7 +517,7 @@ to find IP address, and modify "default-ssl.conf" as follows:
                 SSLCertificateKeyFile /etc/ssl/private/jhuws.key
 ```
 
-In line 2, replace "_default_" by your IP address. “443” is the port number for SSL connection. In line 4, insert your ServerName. Note that this should be consistent with your previous setting while generating CSR. In line 32 and 33, change the directory of where your certificate and private key are stored. Save all these changes and use
+In line 2, replace "default" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. Note that this should be consistent with your previous setting while generating CSR. In line 32 and 33, change the directory to where your certificate and private key are stored. Save all these changes and use
 
 ```
 sudo a2enmod ssl
@@ -536,7 +536,7 @@ Now we can test the result of all the previous work by connecting web server fro
 
 ###### Curl
 
-Since browser on GENI run so slow that you will get crazy if you find you did something dumb, it is suggested that use Curl to test before you run a browser. To make your life easier, get into root environement to do the followings.
+Since browser on GENI run so slow that you will get crazy if you find you did something dumb, it is suggested to use Curl to test before you actually run a browser. To make your life easier, get into root environement to do the followings.
 
 ```
 sudo su
@@ -544,13 +544,13 @@ apt-get update
 apt-get install curl
 ``` 
 
-When the installation is completed, modify the hosts file. The hosts file translates names of websites to IP addresses locally, that is, before the machine made a DNS request. Change permission of this file
+When the installation is completed, modify the hosts file. The hosts file translates names of websites to IP addresses before the machine made a DNS request. To modigy it, change the permission of this file
 
 ```
 sudo chmod 777 hosts
 ```
 
-and edit it so that the server name "jhuws.edu" maps to the IP addresses.
+and edit it so that the server name "jhuws.edu" is mapped to the IP addresses.
 
 ```
 127.0.0.1       localhost loghost localhost.pkileo.ch-geni-net.geni.it.cornell.edu
@@ -587,81 +587,72 @@ We choose Firefox browser in this experiment. Of course, you can choose other br
 sudo apt-get install firefox
 ```
 
-![Alt text](pic/Picture11.png?raw=true "Title")
-
-
-The operation of next step will be different for windows, Mac and Linux operation systems. For windows and MacOS operation systems, we need to depend on third party software to enable the graphics display on GENI node.
+The following steps vary. They depend on your operating system. For windows and MacOS, they have to rely on third party softwares to display graphical interface.
 
 ###### For Windows operation system:
-Install the Xming software on your local operation system. Xming is an X11 display server for Microsoft Windows operating systems. Then run it to start the X server. You should see the Xming icon in the taskbar if it is running.
+First, install Xming locally. Xming is an X11 display server for Microsoft Windows. Second, launch the X server. You should see the Xming icon in the taskbar if it is up and running. Third, use PuTTY to connect to the user node. You can read the instruction here if you are not familiar with PuTTY.
 
-![Alt text](pic/Picture12.png?raw=true "Title")
-
-
-Then use PuTTY to log onto the GENI node. 
-You can see the instruction here about how to log onto GENI node using PuTTY.
 http://groups.geni.net/geni/wiki/HowTo/LoginToNodes
-Remember to click the option on X11 option besides the other steps of logging onto GENI node using PuTTY.
 
+Remember to check these two options, "Enable X11 forwarding" and "MIT-Magic-Cookie-1," in PuTTy configuration.
 
-![Alt text](pic/Picture13.png?raw=true "Title")
-
-
-Then we can run the graphics display on GENI node on Windows operation system.
+Now, we are able to display browser in a graphical interface. Use this command to launch the browser:
 
 ```
 firefox
 ```
-![Alt text](pic/Picture14.png?raw=true "Title")
 
-
-Wait for a second, and then we can see the browser GUI display is shown with the help of Xming
-
-![Alt text](pic/Picture15.png?raw=true "Title")
-
+It might take a while, just be patient and you can see your browser displayed with the help of Xming.
 
 
 ###### For MacOS operation system
 
-Install XQuartz on your Mac. XQuartz is an X server designed for MacOS.
- 
-![Alt text](pic/Picture16.png?raw=true "Title")
+First, install XQuartz on your Mac. XQuartz is an X server designed for MacOS. Second, open Xquartz with terminal. You should see a xterm window displaying something similar to
 
- 
-Right click on the XQuartz icon in the dock and select Applications > Terminal. This should bring up a new xterm terminal windows.
+```
+bash-3.2$
 
-![Alt text](pic/Picture17.png?raw=true "Title")
 
-Then make an ssh connection to the GENI node on this terminal windows.
 
-![Alt text](pic/Picture18.png?raw=true "Title")
 
- 
-We can enable the graphics display of browser on GENI node with the help of XQuartz software.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+Third, make an ssh connection to the user node in this terminal. Now, we are able to display browser in a graphical interface. Use this command to launch the browser:
 
 ```
 firefox
 ```
 
-![Alt text](pic/Picture19.png?raw=true "Title")
- 
 ###### For other Linux operation system
-It’s much simple when you are using Linux operation system.
-Just ssh into the Linux system of your choice using the -Y argument.
+It’s much simpler when you are using Linux rather than other operation systems. Just ssh into the Linux system of your choice using the -Y argument. Then, launch your Firefox.
 
-![Alt text](pic/Picture20.png?raw=true "Title")
-
-
-Then run Firefox browser.
 ```
 firefox
 ```
  
-![Alt text](pic/Picture21.png?raw=true "Title")
-
 ## Test Apache service and PHP service
 
-Now because we already installed and enable the browser. We can test the Apache service and PHP service installed before.
+Now, we are already to use browser to test our server.
+
 ###### Test Apache service
 
 Open the Firefox browser using command 

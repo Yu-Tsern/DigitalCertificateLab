@@ -1,36 +1,30 @@
-# Lab1 Issue and Revoke Certificates
+# Lab1 Certificate Issuance and Revocation
   
 ## Content
-  - [Introduction to Certificate Authority](https://github.com/Yu-Tsern/DigitalCertificateLab/tree/master/lab1#introduction-to-certificate-authority)
-  - [Introduction to LAMP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#introduction-to-lamp)
+  - [Introduction](https://github.com/Yu-Tsern/DigitalCertificateLab/tree/master/lab1#introduction)
   - [Network Topology](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#network-topology)
-  - [Distribution of Digital Certificates](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#distribution-of-digital-certificates)
+  - [Certificates Issuance](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#certificate-issuance)
   - [LAMP Installation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#lamp-installation)
     - [MySQL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-mysql)
     - [Apache](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-apache)
     - [PHP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-php)
-    - [PHP and MySQL Extensions](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-php-and-mysql-extensions)
-    - [Writing simple PHP websites](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#write-a-simple-php-website)
-    - [SSL connection of Apache](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#enable-apache-ssl-connection)
-  - [Testing Certificate Configuration](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#connection-test)
+    - [Simple PHP websites](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#write-a-simple-php-website)
+    - [Apache SSL connection](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#enable-apache-ssl-connection)
+  - [Certificate Issuance Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#connection-test)
     - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#curl)
     - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#browser)
-  - [Certificate revocation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#revoke-a-digital-certificate)
-  - [Testing Certificate Revocation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#connect-to-ws-after-the-certificate-was-revoked)
+  - [Certificate Revocation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#revoke-a-digital-certificate)
+  - [Certificate Revocation Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#connect-to-ws-after-the-certificate-was-revoked)
     - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#curl-1)
     - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#browser-1)
 
-## Introduction to certificate authority
-Certificate Authority is a trusted third party that issues electronic documents that verify a digital entity’s identification on the Internet. 
-In cryptography mean, certificate authority verifies the ownership of the public key of the named subject of the certificate.
 
+## Introduction
+Certificate Authorities are trusted third parties which issue electronic documents proving digital entitys' identifications. In public key infrastructure specifically, it is the party that verify ownerships of public keys.
 
-## Introduction to LAMP
+LAMP is a software bundle named after its software components, Linux operating system, Apache HTTP Server, MySQL database management system and PHP programming language. This bundle is suitable for building dynamic websites and web applications. In addition to these four components, this software bundle can also be combined with other software packages. 
 
-LAMP is short for the software bundle of Linux operating system, Apache HTTP Server, MySQL database management system and PHP programming language.
-This bundle can realize the role and function of a web server, which can drive Web applications. Although not actually designed to work together, these open source software is comparatively simple and easy to use.
-Besides this four software, this software bundle can also be combined with many other free and open-source software packages
-
+In this lab, you will build a websites and generate a valid certificate for it. Then, you'll try to connect to this website from another geni node. At last, you will revoke the certificate and try to connect to the website again.
 
 
 ## Network topology
@@ -38,17 +32,17 @@ Besides this four software, this software bundle can also be combined with many 
 ![Alt text](pic/Picture1.png?raw=true "Title")
 
 
-The node named CA will be the certificate authority in this experiment. The node named WS will be the web server in this experiment and we will install LAMP on this node to enable it to be a web server. Notice: we must wait for all the GENI node turn green, which means the remote machines are ready for us to use, then we can continue the following steps. This may take a while.
+The node named CA will be the certificate authority in this experiment. The node named WS will be the web server in this experiment, and we will install LAMP on this node. Notice: Not until the GENI nodes turn green can we continue the following steps. This may take a while.
 
-## Distribution of digital certificates
+## Certificate Issuance
 
 OpenSSL is a cryptographic toolkit for SSL and TLS. In this lab, it will be used to:
 
-(1) generate private key and self-signed certificate for certificate authority,
-(2) generate private key and certificate signing request for web server,
-(3) sign the certificate signing request generated by the web server.
+1. generate private key and self-signed certificate for certificate authority,
+2. generate private key and certificate signing request for web server,
+3. sign the certificate signing request generated by the web server.i
 
-Fortunately, this toolkit is pre-installed on GENI, thus no installation is needed. After connecting to the CA node, take a look at the "/etc/ssl" directory. This is the directory that stores all files related to Openssl.
+Fortunately, this toolkit is pre-installed on GENI, thus no installation is needed. After connecting to the **ca** node, take a look at the "/etc/ssl" directory. This is the directory that stores all files related to Openssl.
 
 ```
 cd /etc/ssl
@@ -67,6 +61,7 @@ You will see three files under this directory.
 
 
 ###### Certificate Authority Configuration
+
 Before this node can function as a certificate authority, some preparations need to be done. First, "index.txt", "newcerts", and "serial" should be created in this directory.
 
 ```
@@ -79,7 +74,7 @@ Before this node can function as a certificate authority, some preparations need
     serial
 ```
 
-Since all these changes require root privilage, it is suggested to get into root environment before you start:
+Since all these changes require root privilage, it is suggested to get into root environment before you start. You can exit this environment with "ctrl + D" after these commands are executed.
 
 ```
 sudo su
@@ -129,7 +124,7 @@ If you choose to do download the file, here are some tips for file transfer.
 
 (1) SFTP
 
-First, establish a SFTP connection by:
+First, open another terminal and establish a SFTP connection by:
 
 ```
 sftp -i <geni_private_key> -oPort=<geni_port> <user>@<host>
@@ -141,7 +136,7 @@ For example,
 sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=28693 yjou2@pc2.geni.it.cornell.edu
 ```
 
-After putting in the passphrase created when generating private key, a "sftp>" prompt should appear. Now, use "mget" command to fetch the file. If the file is retrieved succefully, it will show you the file name, file size, transfer rate and elapsed time.
+After putting in the passphrase created when generating your private key, a "sftp>" prompt should appear. Now, use "mget" to fetch the file. If the file is retrieved succefully, it will show you the file name, file size, transfer rate and elapsed time. Your terminal will show you something similar to the followings.
 
 ```
 sftp> mget /etc/ssl/openssl.cnf
@@ -149,7 +144,7 @@ Fetching /etc/ssl/openssl.cnf to openssl.cnf
 /etc/ssl/openssl.cnf                                            100%   11KB 213.1KB/s   00:00  
 ```
 
-Once finishing editing files, use "put" command to upload thems.
+Once finishing editing files, use "put" to upload it. 
 
 ```
 sftp> put openssl.cnf
@@ -159,16 +154,20 @@ openssl.cnf                                                     100%   11KB 147.
 
 (2) WinSCP
 
-You can edit it directly through WinSCP, however, this requires you to change the permission of "openssl.cnf" first.
+Instructions of how to use WinSCP can be found in this link:
+http://mountrouidoux.people.cofc.edu/CyberPaths/winscp.html
+Using WinSCP requires you to change the permission of "openssl.cnf" first.
 
 ```
 sudo chmod 777 openssl.cnf
 ```
- 
-Now, the CA node can generate its private key and self-signed certificate. The command of generating private key is:
+
+###### Generate private key and self-signed certificate
+
+Now, the **ca** node can generate its private key and self-signed certificate. The command of generating private key is:
 
 ```
-openssl genrsa -out private/cakey.pem 2048
+sudo openssl genrsa -out private/cakey.pem 2048
 ```
 
 You can check whether the private key was generated succefully by listing files in "private." If everything went well, you will see a "cakey.pem" in it.
@@ -180,10 +179,10 @@ sudo ls private
 Next, the command of creating self-signed certificate is:
 
 ```
-openssl req -new -x509 -key private/cakey.pem -out cacert.pem
+sudo openssl req -new -x509 -key private/cakey.pem -out cacert.pem
 ```
 
-It will ask you to type in information such as country name and organizaton name. If you did modify default values in previous steps, just leave it blank if values inside those brackets are the same as your expectation. Note that no server will be setup on CA node, so you can set whatever common name you want. However, when it comes to WS node, the common name should be consistent with your configuration.
+It will ask you to key in information such as country name and organizaton name. If you did modify default values in previous steps, just leave it blank if values inside those brackets are the same as your expectation. Note that no server will be setup on **ca** node, so you can set whatever common name you like. However, when it comes to **ws** node, the common name should be consistent with your configuration.
 
 ```
 root@ca:/etc/ssl# openssl req -new -x509 -key private/cakey.pem -out cacert.pem
@@ -205,7 +204,7 @@ Email Address []:
 
 ###### Generate certificate signing request
 
-Now, the CA node is ready to sign WS's certificate. The next step is to connect to the WS node and generate a certificate signing request(CSR). The following commands are used to generate private key and corresponding CSR.
+Now, the **ca** node is ready to sign **ws**'s certificate. The next step is to connect to **ws** node and generate a certificate signing request(CSR). The following commands are used to generate private key and corresponding CSR.
 
 ```
 cd /etc/ssl
@@ -240,11 +239,11 @@ An optional company name []:
 
 ###### Transfer certificate signing request
 
-Still, there are several ways to transfer files.
+Still, there are several ways to transfer your files.
 
 (1) SFTP
 
-First, setup a connection with WS node and download the CSR.
+First, setup a connection with **ws** node and download your CSR.
 
 ```
 sftp -i <geni_private_key> -oPort=<geni_port> <user>@<host>
@@ -263,7 +262,7 @@ Fetching /etc/ssl/jhuws.csr to jhuws.csr
 sftp> 
 ```
 
-Then, "ctrl + D" to exit the connection and setup another connection with the CA node. Note that we are not permitted to write to the "etc/ssl" on CA directly, thus it is put in "~" instead. It does not matter where we put the CSR file since the file location can be specified when signing CSRs.
+Then, "ctrl + D" to exit the connection and setup another connection with the CA node. Note that we are not permitted to write to the "etc/ssl" on CA directly, thus it is put in "~" instead. It does not matter where we put the CSR file since the file location can be specified when signing it.
 
 ```
 $ sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=28691 yjou2@pc2.geni.it.cornell.edu
@@ -285,9 +284,9 @@ chmod 777 <file_name>
 If you're using the same file name as we did in the previous steps, it is ”chmod 777 jhuws.csr”
 
 
-###### Sign a CSR
+###### Sign the certificate signing request
 
-After CSR is transfered to the CA node, we can sign it and generate a certificate.
+After CSR is transfered to the **ca** node, a certificate for **ws** can be generated.
 
 ```
 sudo openssl ca -in <csr_location> -out <certificate_location> -days 3650
@@ -299,7 +298,7 @@ If you used sftp to transfer CSR, it is probably located at "~", thus, the comma
 sudo openssl ca -in ~/jhuws.csr -out ~/jhuws.crt -days 3650
 ```
 
-It will ask you whether you would like to sign this request. Type "y" to those questions.
+It will ask you whether you would like to sign this request. Type "y" to those questions. 
 
 ```
 Using configuration from /usr/lib/ssl/openssl.cnf
@@ -335,20 +334,27 @@ Write out database with 1 new entries
 Data Base Updated
 ```
 
-Once WS's certificate is generated, transfer "jhuws.crt" to WS node and "cacert.pem" to USER node. In general, a chain of certificates are needed when the server is proving its ownership of the public key. However, for simplicity, there's only one certificate in the chain in this lab. Additionally, recall that when client sees a chain of certificates, it trace the path of trust back to the root CA and see if it is trust worthy, and that is the reason why "cacert.pem" should be transfered to the USER node. 
+Once **ws**'s certificate is generated, transfer "jhuws.crt" to **ws** node and "cacert.pem" to **user** node. In general, a chain of certificates are needed when the server is proving its ownership of the public key. However, for simplicity, there's only one certificate in the chain in this lab. Additionally, recall that when client sees a chain of certificates, it traces the path of trust back to the root CA and see if it is trust worthy, and that is the reason why "cacert.pem" should be transfered to the **user** node. 
 
 If you transfer the certificate through your computer, either by SFTP or WinSCP, you can open it and take a look at its content. Use "cat" command to view it on Linux, or double click it on Mac/Windows. You can see that "jhuws.crt" is issued by "jhuca.edu," which is the certificate authority. 
 
-To enable WS’s certificate, the certificate and private key should be put into "/etc/ssl."
+To enable **ws**’s certificate, the certificate and private key should be put into "/etc/ssl."
 
 ```
-sudo cp jhuws.crt /etc/ssl/certs
-sudo cp jhuws.key /etc/ssl/private
+sudo cp <ws_cert_location> /etc/ssl/certs
+sudo cp <ws_key_location> /etc/ssl/private
+```
+
+For example,
+
+```
+sudo cp ~/jhuws.crt /etc/ssl/certs
+sudo cp /etc/ssl/jhuws.key /etc/ssl/private
 ```
 
 ## LAMP Installation
 
-Since GENI VMs are linux-powered devices, only Apache, MySQL, and PHP need to be install. Note that the order of installation does matter because PHP server depends on the services of Apache and MySQL. After using SSH to connect to WS node, use  
+Since GENI VMs are linux-powered devices, only Apache, MySQL, and PHP need to be install. Note that the order of installation does matter because installation of PHP depends on Apache and MySQL. After you SSH **ws** node, use  
 
 ```
 sudo apt-get update
@@ -392,7 +398,7 @@ When the installation is completed, check whether it is installed successfully t
 sudo netstat -tap | grep mysql
 ```
 
-You should see a message similar to the following one, which means there is a listening port of mysql enabled.
+You will see a message similar to the following one, which means there is a listening port of mysql.
 
 ```
 tcp        0      0 localhost:mysql         *:*                     LISTEN      18658/mysqld  
@@ -405,7 +411,7 @@ tcp        0      0 localhost:mysql         *:*                     LISTEN      
 sudo apt-get install apache2
 ```
 
-We can run a browser to check whether it is installed successfully after all other settings are completed.
+You will run a browser to check whether it is installed successfully after all other settings are completed.
 
 ###### Install PHP
 
@@ -432,19 +438,18 @@ It may take a while to install these packages. After it is installed, a “www�
     www
 ```
 
-###### Install PHP and MySQL extensions
+In addition to PHP itself, some other extensions are needed as well.
 
 ```
-Command:” sudo apt-get install php-intl php-imagick php-imap php5-mcrypt php5-memcache php7.0-ps php-pspell php-recode php-snmp php7.0-sqlite php-tidy php7.0-xsl
+sudo apt-get install php-intl php-imagick php-imap php-mcrypt php-memcache php7.0-ps php-pspell php-recode php-snmp php7.0-sqlite php-tidy php7.0-xsl
 ```
 
-Notice: the GENI node is initiated with an Ubuntu operation system following its default setting. If you choose other operation systems rather the default operation system, there might be a warning message showing on the screen and it may fail to initiate the GENI nodes.
+Notice: the GENI node is initiated with an Ubuntu operation system following its default setting. If you choose other operation systems rather the default operation system, there might be a warning message showing you it may fail to initiate the GENI nodes.
 
 ###### Write a simple PHP website
 
-We will write a simple PHP website and try to connect to it in order to test whether the PHP service was installed successfully. You can use whatever way you like to write the PHP source code. If you're trying to edit it directly, instructions of how to use WinSCP can be found in this link:
+We will write a simple PHP website and try to connect to it in order to test whether PHP was installed successfully. You can use whatever way you like to write the PHP source code.
 
-http://mountrouidoux.people.cofc.edu/CyberPaths/winscp.html
  
 Recall that "www" stores the website source code. To make change to this file, first change its permission.
 
@@ -452,7 +457,7 @@ Recall that "www" stores the website source code. To make change to this file, f
 sudo chmod 777 /var/www
 ```
 
-Second, create a file named “info.php” under the “www/html” folder, then copy these codes into this file:
+Second, create a file named “info.php” under the “/var/www/html” folder, then copy these codes into this file:
 
 ```
 <?php
@@ -493,7 +498,7 @@ Then, use
 ifconfig
 ```
 
-to find IP address, and modify "default-ssl.conf" as follows:
+to find IP address, and modify the "default-ssl.conf" in "sites-enabled":
 
 
 ```
@@ -532,7 +537,7 @@ to find IP address, and modify "default-ssl.conf" as follows:
                 SSLCertificateKeyFile /etc/ssl/private/jhuws.key
 ```
 
-In line 2, replace "default" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. Note that this should be consistent with your previous setting while generating CSR. In line 32 and 33, change the directory to where your certificate and private key are stored. Save all these changes and use
+In line 2, replace "\_default\_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. Note that this should be consistent with your previous setting while generating CSR. In line 32 and 33, change the directory to where your certificate and private key are stored. Save all these changes and use
 
 ```
 sudo a2enmod ssl
@@ -546,7 +551,7 @@ sudo service apache2 restart
 
 ## Connection test
 
-Now we can test the result of all the previous work by connecting web server from the USER node. First, ssh the USER node.
+Now we can test the result of all the previous work by connecting web server from the **user** node. First, ssh the **user** node.
 
 
 ###### Curl
@@ -559,10 +564,10 @@ apt-get update
 apt-get install curl
 ``` 
 
-When the installation is completed, modify the hosts file. The hosts file translates names of websites to IP addresses before the machine made a DNS request. To modigy it, change the permission of this file
+When the installation is completed, modify the hosts file. It is the file that translates names of websites to IP addresses before the machine made a DNS request. To modify it, change the permission of this file
 
 ```
-sudo chmod 777 hosts
+sudo chmod 777 /etc/hosts
 ```
 
 and edit it so that the server name "jhuws.edu" is mapped to the IP addresses.
@@ -580,13 +585,13 @@ and edit it so that the server name "jhuws.edu" is mapped to the IP addresses.
 ```
 
  
-Where the “172.17.2.18” is the IP address of WS node. And jhuws.edu is the server name we set up before. After this changes are made, use
+Where the “172.17.2.18” is the IP address of WS node. And jhuws.edu is the server name we set up before. After these changes are made, use
 
 ```
 curl jhuws.edu
 ```
 
-to see if it works well. If it returns a HTML response of our web server. The connection is successful. Next, include the SSL configuration 
+to see if normal connection works. If it returns a HTML response of our web server, the normal connection is successful. Next, try SSL connection 
 
 ```
 curl https://jhuws.edu --cacert cacert.crt
@@ -596,10 +601,11 @@ If the HTML reponse still appears, congratulations! You can step further to test
 
 ###### Browser
 
-We choose Firefox browser in this experiment. Of course, you can choose other browsers if you like. This part should be done on both WS and USER node.
+We choose Firefox browser in this experiment. Of course, you can choose other browsers if you want. Note that this part should be done on both **ws** and **user** node. You will first test it on **ws** locally, then test it with **user**.
 
 ```
 sudo apt-get install firefox
+sudo apt-get install libcanberra-gtk3-module
 ```
 
 The following steps vary. They depend on your operating system. For windows and MacOS, they have to rely on third party softwares to display graphical interface.
@@ -645,7 +651,7 @@ firefox
 
 ###### Test Apache locally
 
-Now, we are ready to test our server through browser. Open Firefox on the WS node using command 
+Now, we are ready to test our server through browser. Open Firefox on the **ws** node using command 
 
 ```
 firefox
@@ -659,9 +665,9 @@ Put “127.0.0.1” in the address bar and press ENTER. If it shows the "Apache2
 In this step, we will try to connect to the simple PHP website we wrote to test whether the PHP server functions correctly. First, run the browser on the WS node. Second, put "127.0.0.1/info.php" into the address bar. If we can see configuration information of PHP then we know the PHP service is installed successfully.
 
 
-###### Connection test on USER node
+###### Connection test on user node
 
-Open the browser on user node and visit "jhuws.edu/info.php." If it shows you the same web page when testing PHP locally on the WS node. You can now try to install the digital certificate. Go to "preference >> Advanced >> Certificates >> View Certificates" in the browser menu.
+Open the browser on **user** node and visit "jhuws.edu/info.php." If it shows you the same web page when testing PHP locally on the **ws** node. You can now try to install the digital certificate. Go to "preference >> Advanced >> Certificates >> View Certificates" in the browser menu. If you cannot find "Advanced" in your browser, that is probably because of differences in each version, try "preference >> Privacy & Security >> Certificates >> View Certificates"
 
 ![Alt text](pic/Picture52.png?raw=true "Title")
 
@@ -693,10 +699,10 @@ The information we put in when making the digital certificate is now shown in th
 
 ## Revoke a digital certificate
 
-Now, try to revoke the digital certificate. First, connect to the CA node and use this command to revoke the digital certificate. Recall that the name of the digital certificate we issued before is “jhuws.crt”
+Now, try to revoke the digital certificate. First, connect to the **ca** node and use this command to revoke the digital certificate. Recall that the name of the digital certificate we issued before is “jhuws.crt”
 
 ```
-openssl ca -revoke jhuws.crt
+sudo openssl ca -revoke jhuws.crt
 ```
 
 You can see two messages, "Revoking Certificate _some number_" and "Data Base Updated." To make sure it is the one you expected, use 
@@ -708,7 +714,7 @@ cat index.txt
 to see detail information of the certificate with that number. Now, create a new Certificate Revocation List(CRL) using this command:
 
 ```
-openssl ca -gencrl -out thisca.crl
+sudo openssl ca -gencrl -out thisca.crl
 ```
 
 Recall that CRL is the filw that stores all the revoked certificate. You can take a look at the CRL by using
@@ -717,16 +723,16 @@ Recall that CRL is the filw that stores all the revoked certificate. You can tak
 cat thisca.crl
 ```
 
-Then, we initialize the ”crlnumber” to "00." Everytime a certificate is revoked, the number will increase by one. Finally, the digital certificate we issued before is successfully revoked.
+Then, we initialize the ”crlnumber” to "00." Everytime a certificate is revoked, this number will increase by one. Finally, the digital certificate we issued before is successfully revoked.
 
 
-## Connect to WS after the certificate was revoked
+## Connect to ws after the certificate was revoked
 
-Remove the old "cacert.crt" and copy the new "cacert.pem" to the USER node. As we have done before, change the extension from "pem to "crt." Additionally, move the Certificate Revokation List, "thisca.crl," to the USER node. 
+Remove the old "cacert.crt" and copy the new "cacert.pem" to the **user** node. As we have done before, change the extension from "pem to "crt." Additionally, move the Certificate Revokation List, "thisca.crl," to the **user** node. 
 
 ###### CURL
 
-Then, try to connect to the WS node with curl. Note that the CRL is included this time. 
+Then, try to connect to the **ws** node with curl. Note that the CRL is included this time. 
 
 ```
 curl https://jhuws.edu --cacert cacert.crt --crlfile thisca.crl
@@ -736,11 +742,11 @@ You will see there's an error complaining the certificate was revoked.
 
 ###### Browser
 
-Unfortunately, Firefox removed the user interface of importing CRL, thus, we are not able to revoke a certificate on our own. Information can be found in the following website. https://wiki.mozilla.org/CA:ImprovingRevocation#Preload_Revocations_of_Intermediate_CA_Certificates However, you can still try the a tool, MobaXterm, to configure CRL manually.
+Unfortunately, Firefox removed the user interface of importing CRL, thus, we are not able to revoke a certificate on our own. Information can be found in the following website. https://wiki.mozilla.org/CA:ImprovingRevocation#Preload_Revocations_of_Intermediate_CA_Certificates However, you can still try a tool, MobaXterm, to configure CRL manually.
 
  ![Alt text](pic/Picture68.png?raw=true "Title")
 
-As you can see from the screenshot, you can move files on the leften side of the window, and there's a terminal on the righten side.
+As you can see from the screenshot, you can move files on the left-hand side of the window, and there's a terminal on the right-hand side.
 
 ## Assignments
 

@@ -10,11 +10,11 @@
     - [PHP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-php)
     - [Simple PHP websites](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#write-a-simple-php-website)
     - [Apache SSL connection](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#enable-apache-ssl-connection)
-  - [Certificate Issuance Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#connection-test)
+  - [Certificate Issuance Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#certificate-issuance-test)
     - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#curl)
     - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#browser)
   - [Certificate Revocation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#revoke-a-digital-certificate)
-  - [Certificate Revocation Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#connect-to-ws-after-the-certificate-was-revoked)
+  - [Certificate Revocation Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#certificate-revocation-test)
     - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#curl-1)
     - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#browser-1)
 
@@ -32,7 +32,7 @@ In this lab, you will build a websites and generate a valid certificate for it. 
 ![Alt text](pic/Picture1.png?raw=true "Title")
 
 
-The node named CA will be the certificate authority in this experiment. The node named WS will be the web server in this experiment, and we will install LAMP on this node. Notice: Not until the GENI nodes turn green can we continue the following steps. This may take a while.
+Node **ca** will be the certificate authority in this experiment. Node **ws** will be the web server in this experiment, and we will install LAMP on this node. Node **user** is where you launch your browser and connect to the web server. Notice: Not until the GENI nodes turn green can you continue the following steps. This may take a while.
 
 ## Certificate Issuance
 
@@ -262,7 +262,7 @@ Fetching /etc/ssl/jhuws.csr to jhuws.csr
 sftp> 
 ```
 
-Then, "ctrl + D" to exit the connection and setup another connection with the CA node. Note that we are not permitted to write to the "etc/ssl" on CA directly, thus it is put in "~" instead. It does not matter where we put the CSR file since the file location can be specified when signing it.
+Then, "ctrl + D" to exit the connection and setup another connection with the **ca** node. Note that you are not permitted to write to the "etc/ssl" on **ca** directly, thus it is easier to put it in "~" instead. It does not matter where you put the CSR file since the file location can be specified when signing it.
 
 ```
 $ sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=28691 yjou2@pc2.geni.it.cornell.edu
@@ -281,7 +281,7 @@ Still, using WinSCP requires changing permission of "openssl.cnf."
 chmod 777 <file_name>
 ```
 
-If you're using the same file name as we did in the previous steps, it is ”chmod 777 jhuws.csr”
+If you're using the same file name as the one used in the previous steps, it is ”chmod 777 jhuws.csr”
 
 
 ###### Sign the certificate signing request
@@ -448,10 +448,7 @@ Notice: the GENI node is initiated with an Ubuntu operation system following its
 
 ###### Write a simple PHP website
 
-We will write a simple PHP website and try to connect to it in order to test whether PHP was installed successfully. You can use whatever way you like to write the PHP source code.
-
- 
-Recall that "www" stores the website source code. To make change to this file, first change its permission.
+You will write a simple PHP website and try to connect to it in order to test whether PHP was installed successfully. You can use whatever way you like to write the PHP source code. Recall that "www" stores the website source code. To make change to this file, first change its permission.
 
 ```
 sudo chmod 777 /var/www
@@ -549,9 +546,9 @@ to enable the SSL module of Apache2. Then, restart apache2 server using command:
 sudo service apache2 restart
 ```
 
-## Connection test
+## Certificate Issuance Test
 
-Now we can test the result of all the previous work by connecting web server from the **user** node. First, ssh the **user** node.
+Now you can test the result of all the previous work by connecting web server from the **user** node. First, ssh the **user** node.
 
 
 ###### Curl
@@ -585,7 +582,7 @@ and edit it so that the server name "jhuws.edu" is mapped to the IP addresses.
 ```
 
  
-Where the “172.17.2.18” is the IP address of WS node. And jhuws.edu is the server name we set up before. After these changes are made, use
+Where the “172.17.2.18” is the IP address of **ws** node. And jhuws.edu is the server name set up before. After these changes are made, use
 
 ```
 curl jhuws.edu
@@ -601,7 +598,7 @@ If the HTML reponse still appears, congratulations! You can step further to test
 
 ###### Browser
 
-We choose Firefox browser in this experiment. Of course, you can choose other browsers if you want. Note that this part should be done on both **ws** and **user** node. You will first test it on **ws** locally, then test it with **user**.
+For simplicity, Firefox is the default browser you will use in this experiment. Of course, you can choose other browsers if you want. Note that this part should be done on both **ws** and **user** node. You will first test it on **ws** locally, then test it with **user**.
 
 ```
 sudo apt-get install firefox
@@ -618,7 +615,7 @@ http://groups.geni.net/geni/wiki/HowTo/LoginToNodes
 
 Remember to check these two options, "Enable X11 forwarding" and "MIT-Magic-Cookie-1," in PuTTy configuration.
 
-Now, we are able to display browser in a graphical interface. Use this command to launch the browser:
+Now, browser can be displayed in a graphical interface. Use this command to launch the browser:
 
 ```
 firefox
@@ -635,7 +632,7 @@ First, install XQuartz on your Mac. XQuartz is an X server designed for MacOS. S
 bash-3.2$
 ```
 
-Third, make an ssh connection to the user node in this terminal. Now, we are able to display browser in a graphical interface. Use this command to launch the browser:
+Third, make an ssh connection to the **user** node in this terminal. Now, browser can be displayed in a graphical interface. Use this command to launch the browser:
 
 ```
 firefox
@@ -643,7 +640,13 @@ firefox
 
 ###### Linux
 
-It’s much simpler when you are using Linux rather than other operation systems. Just ssh into the Linux system of your choice using the -Y argument. Then, launch your Firefox.
+It’s much simpler when you are using Linux rather than other operation systems. Just ssh into the Linux system of your choice using the -Y argument. For example, 
+
+```
+ssh -i ~/.ssh/id_geni_ssh_rsa -Y yjou2@pc1.geni.it.cornell.edu -p 26844
+```
+
+Then, launch your Firefox.
 
 ```
 firefox
@@ -651,7 +654,7 @@ firefox
 
 ###### Test Apache locally
 
-Now, we are ready to test our server through browser. Open Firefox on the **ws** node using command 
+Now, you are ready to test your server through browser. Open Firefox on the **ws** node using command 
 
 ```
 firefox
@@ -662,44 +665,58 @@ Put “127.0.0.1” in the address bar and press ENTER. If it shows the "Apache2
 
 ###### Test PHP locally
 
-In this step, we will try to connect to the simple PHP website we wrote to test whether the PHP server functions correctly. First, run the browser on the WS node. Second, put "127.0.0.1/info.php" into the address bar. If we can see configuration information of PHP then we know the PHP service is installed successfully.
+In this step, you will try to connect to the simple PHP website you wrote to test whether the PHP server functions correctly. First, run the browser on the **ws** node. Second, put "127.0.0.1/info.php" into the address bar. Seeing configuration information of PHP means the PHP was installed successfully.
 
 
 ###### Connection test on user node
 
-Open the browser on **user** node and visit "jhuws.edu/info.php." If it shows you the same web page when testing PHP locally on the **ws** node. You can now try to install the digital certificate. Go to "preference >> Advanced >> Certificates >> View Certificates" in the browser menu. If you cannot find "Advanced" in your browser, that is probably because of differences in each version, try "preference >> Privacy & Security >> Certificates >> View Certificates"
+Open the browser on **user** node and visit "jhuws.edu/info.php." If it shows you the same web page when testing PHP locally on the **ws** node. You can now try to install the digital certificate. First click on the menu on the upper right corner.
 
-![Alt text](pic/Picture52.png?raw=true "Title")
+![Alt text](pic/Picture69.png?raw=true "Title")
 
-Then, import the "cacert.crt" we copy to user node before.
+Then, go to "preference >> Privacy & Security >> Certificates >> View Certificates"
 
-![Alt text](pic/Picture53.png?raw=true "Title")
+![Alt text](pic/Picture70?raw=true "Title")
 
-Trust this certificate authority we build on our own.
+If you cannot find "Advanced" in your browser, it is because there's some differences between each firefox version, try "preference >> Advanced >> Certificates >> View Certificates." Then, click the "import" below.
 
-![Alt text](pic/Picture54.png?raw=true "Title")
+![Alt text](pic/Picture71.png?raw=true "Title")
 
-Now we can see our certificate authority is in the list of trusted certificate authorities.
+Find "cacert.crt" you copied to **user** node before.
+
+![Alt text](pic/Picture72.png?raw=true "Title")
+
+Trust this certificate authority you built on your own.
+
+![Alt text](pic/Picture73.png?raw=true "Title")
+
+Now you can see your certificate authority is in the list of trusted certificate authorities.
  
-![Alt text](pic/Picture55.png?raw=true "Title")
+![Alt text](pic/Picture74.png?raw=true "Title")
 
 Visit "jhuws.edu/info.php" again, you can see there is a exclamation mark in the address bar, which means the connection is not secure.
 
-![Alt text](pic/Picture56.png?raw=true "Title")
+![Alt text](pic/Picture75.png?raw=true "Title")
 
-Try to use "https" instead of "http"
+Try to use "https" instead of "http." You will see a green lock shows up beside the exclamation mark. The connection is now secure. You can view more details of this connection by click “>”.
 
-![Alt text](pic/Picture57.png?raw=true "Title")
+![Alt text](pic/Picture76.png?raw=true "Title")
 
-You will see the exclamation mark was replaced by a green lock. The connection is now secure. We can view more details of this connection by click “>”.
+You can view the certificate information of this website by clicking "more information" in the prompt
 
-![Alt text](pic/Picture58.png?raw=true "Title")
+![Alt text](pic/Picture77.png?raw=true "Title")
 
-The information we put in when making the digital certificate is now shown in this window. So far, we have already finished the experiment of building a certificate authority and issuing a digital certificate.
+There's an option to view the detail information.
+
+![Alt text](pic/Picture78.png?raw=true "Title")
+
+So far, you have already finished the experiment of building a certificate authority and issuing a digital certificate.
+
+
 
 ## Revoke a digital certificate
 
-Now, try to revoke the digital certificate. First, connect to the **ca** node and use this command to revoke the digital certificate. Recall that the name of the digital certificate we issued before is “jhuws.crt”
+Now, try to revoke the digital certificate. First, connect to the **ca** node and use this command to revoke the digital certificate. Recall the default name of the digital certificate you issued before is “jhuws.crt”
 
 ```
 sudo openssl ca -revoke jhuws.crt
@@ -723,12 +740,12 @@ Recall that CRL is the filw that stores all the revoked certificate. You can tak
 cat thisca.crl
 ```
 
-Then, we initialize the ”crlnumber” to "00." Everytime a certificate is revoked, this number will increase by one. Finally, the digital certificate we issued before is successfully revoked.
+Then, initialize the ”crlnumber” to "00." Everytime a certificate is revoked, this number will increase by one. Finally, the digital certificate is successfully revoked.
 
 
-## Connect to ws after the certificate was revoked
+## Certificate Revocation Test
 
-Remove the old "cacert.crt" and copy the new "cacert.pem" to the **user** node. As we have done before, change the extension from "pem to "crt." Additionally, move the Certificate Revokation List, "thisca.crl," to the **user** node. 
+Remove the old "cacert.crt" and copy the new "cacert.pem" to the **user** node. As you have done before, change the extension from "pem to "crt." Additionally, move the Certificate Revokation List, "thisca.crl," to the **user** node. 
 
 ###### CURL
 
@@ -742,7 +759,7 @@ You will see there's an error complaining the certificate was revoked.
 
 ###### Browser
 
-Unfortunately, Firefox removed the user interface of importing CRL, thus, we are not able to revoke a certificate on our own. Information can be found in the following website. https://wiki.mozilla.org/CA:ImprovingRevocation#Preload_Revocations_of_Intermediate_CA_Certificates However, you can still try a tool, MobaXterm, to configure CRL manually.
+Unfortunately, Firefox removed the user interface of importing CRL, thus, you are not able to revoke a certificate on our own. Information can be found in the following website. https://wiki.mozilla.org/CA:ImprovingRevocation#Preload_Revocations_of_Intermediate_CA_Certificates However, you can still try a tool, MobaXterm, to configure CRL manually.
 
  ![Alt text](pic/Picture68.png?raw=true "Title")
 

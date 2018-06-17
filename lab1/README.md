@@ -676,7 +676,7 @@ Open the browser on **user** node and visit "jhuws.edu/info.php." If it shows yo
 
 Then, go to "preference >> Privacy & Security >> Certificates >> View Certificates"
 
-![Alt text](pic/Picture70?raw=true "Title")
+![Alt text](pic/Picture70.png?raw=true "Title")
 
 If you cannot find "Advanced" in your browser, it is because there's some differences between each firefox version, try "preference >> Advanced >> Certificates >> View Certificates." Then, click the "import" below.
 

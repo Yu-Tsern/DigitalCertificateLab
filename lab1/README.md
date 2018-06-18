@@ -32,7 +32,7 @@ In this lab, you will build a websites and generate a valid certificate for it. 
 ![Alt text](pic/Picture1.png?raw=true "Title")
 
 
-Node **ca** will be the certificate authority in this experiment. Node **ws** will be the web server in this experiment. It is the node you will install LAMP on. Node **user** is where you launch your browser and connect to the web server. Notice: Not until all the GENI nodes turn green can you continue the following steps. This may take a while.
+Node **ca** will be the certificate authority in this experiment. Node **ws** will be the web server in this experiment. It is the node you will install LAMP on. Node **user** is where you launch your browser and connect to the web server. **_Notice: Not until all the GENI nodes turn green can you continue the following steps. This may take a while._**
 
 ## Certificate Issuance
 
@@ -44,13 +44,13 @@ OpenSSL is a cryptographic toolkit for SSL and TLS. In this lab, it will be used
 
 Fortunately, this toolkit is pre-installed on GENI, thus no installation is needed. After connecting to the **ca** node, take a look at the "/etc/ssl" directory. This is the directory that stores all files related to Openssl.
 
-```
+```sh
 cd /etc/ssl
 ls
 ```
 You will see three files under this directory.
 
-```
+```sh
 /etc/ssl
     certs
     openssl.cnf
@@ -64,7 +64,7 @@ You will see three files under this directory.
 
 Before this node can function as a certificate authority, some preparations need to be done. First, "index.txt", "newcerts", and "serial" should be created in this directory.
 
-```
+```sh
 /etc/ssl
     certs
     index.txt
@@ -76,7 +76,7 @@ Before this node can function as a certificate authority, some preparations need
 
 Since all these changes require root privilage, it is suggested to get into root environment before you start. You can exit this environment with "ctrl + D" after these commands are executed.
 
-```
+```sh
 sudo su
 touch index.txt
 mkdir newcerts
@@ -85,7 +85,7 @@ echo 01 > serial
  
 Second, edit "openssl.cnf" either remotely through "vim"/"vi" or transfer the file to your computer and edit it with your own editors. In line 42, replace the directory ".demoCA" with "/etc/ssl."
 
-```
+```sh
  [ CA_default ]
  
  dir             = /etc/ssl              # Where everything is kept
@@ -97,7 +97,7 @@ Second, edit "openssl.cnf" either remotely through "vim"/"vi" or transfer the fi
 
 [ optional ] Change defaut values in line 129, 134, 139 and 146.
 
-```
+```sh
 [ req_distinguished_name ]
 countryName                     = Country Name (2 letter code)
 countryName_default             = US
@@ -126,19 +126,19 @@ If you choose to do download the file, here are some tips for file transfer.
 
 First, open another terminal and establish a SFTP connection by:
 
-```
+```sh
 sftp -i <geni_private_key> -oPort=<geni_port> <user>@<host>
 ```
 
 For example, 
 
-```
+```sh
 sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=28693 yjou2@pc2.geni.it.cornell.edu
 ```
 
 After putting in the passphrase created when generating your private key, a "sftp>" prompt should appear. Now, use "mget" to fetch the file. If the file is retrieved succefully, it will show you the file name, file size, transfer rate and elapsed time. Your terminal will show you something similar to the followings.
 
-```
+```sh
 sftp> mget /etc/ssl/openssl.cnf
 Fetching /etc/ssl/openssl.cnf to openssl.cnf
 /etc/ssl/openssl.cnf                                            100%   11KB 213.1KB/s   00:00  
@@ -146,7 +146,7 @@ Fetching /etc/ssl/openssl.cnf to openssl.cnf
 
 Once finishing editing files, use "put" to upload it. 
 
-```
+```sh
 sftp> put openssl.cnf
 Uploading openssl.cnf to /users/yjou2/openssl.cnf
 openssl.cnf                                                     100%   11KB 147.7KB/s   00:00   
@@ -156,7 +156,7 @@ openssl.cnf                                                     100%   11KB 147.
 
 Instructions of how to use WinSCP can be found in this link: http://mountrouidoux.people.cofc.edu/CyberPaths/winscp.html Using WinSCP requires you to change the permission of "openssl.cnf" first.
 
-```
+```sh
 sudo chmod 777 openssl.cnf
 ```
 
@@ -164,25 +164,25 @@ sudo chmod 777 openssl.cnf
 
 Now, the **ca** node can generate its private key and self-signed certificate. The command of generating private key is:
 
-```
+```sh
 sudo openssl genrsa -out private/cakey.pem 2048
 ```
 
 You can check whether the private key was generated succefully by listing files in "private." If everything went well, you will see a "cakey.pem" in it.
 
-```
+```sh
 sudo ls private
 ```
 
 Next, the command of creating self-signed certificate is:
 
-```
+```sh
 sudo openssl req -new -x509 -key private/cakey.pem -out cacert.pem
 ```
 
 It will ask you to key in information such as country name and organizaton name. If you did modify default values in previous steps, just leave it blank if values inside those brackets are the same as your expectation. Note that no server will be setup on **ca** node, so you can set whatever common name you like. However, when it comes to **ws** node, the common name should be consistent with your configuration.
 
-```
+```sh
 root@ca:/etc/ssl# openssl req -new -x509 -key private/cakey.pem -out cacert.pem
 You are about to be asked to enter information that will be incorporated
 into your certificate request.
@@ -204,7 +204,7 @@ Email Address []:
 
 Now, the **ca** node is ready to sign **ws**'s certificate. The next step is to connect to **ws** node and generate a certificate signing request(CSR). The following commands are used to generate private key and corresponding CSR.
 
-```
+```sh
 cd /etc/ssl
 sudo su
 openssl genrsa -out jhuws.key 2048
@@ -213,7 +213,7 @@ openssl req -new -key jhuws.key -out jhuws.csr
  
 Similar to the process of generating self-signed certificate on the **ca** node, it will ask you to put in several information. However, the common name cannot be set arbitrarily this time, it should be consistent with your configuration.
 
-```
+```sh
 You are about to be asked to enter information that will be incorporated
 into your certificate request.
 What you are about to enter is what is called a Distinguished Name or a DN.
@@ -243,14 +243,14 @@ Still, there are several ways to transfer your files.
 
 First, setup a connection with **ws** node and download your CSR.
 
-```
+```sh
 sftp -i <geni_private_key> -oPort=<geni_port> <user>@<host>
 mget <file_directory>
 ```
 
 For example, 
 
-```
+```sh
 $ sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=28693 yjou2@pc2.geni.it.cornell.edu
 Enter passphrase for key '/Users/yu-tsern/.ssh/id_geni_ssh_rsa': 
 Connected to pc2.geni.it.cornell.edu.
@@ -262,7 +262,7 @@ sftp>
 
 Then, "ctrl + D" to exit the connection and setup another connection with the **ca** node. Note that you are not permitted to write to the "etc/ssl" on **ca** directly, thus it is easier to put it in "~" instead. It does not matter where you put the CSR file since the file location can be specified when signing it.
 
-```
+```sh
 $ sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=28691 yjou2@pc2.geni.it.cornell.edu
 Enter passphrase for key '/Users/yu-tsern/.ssh/id_geni_ssh_rsa': 
 Connected to pc2.geni.it.cornell.edu.
@@ -275,7 +275,7 @@ jhuws.csr                                                       100%  993    36.
 
 Still, using WinSCP requires changing permission of "openssl.cnf."
 
-```
+```sh
 chmod 777 <file_name>
 ```
 
@@ -286,19 +286,19 @@ If you're using the same file name as the one used in the previous steps, it is 
 
 After CSR is transfered to the **ca** node, a certificate for **ws** can be generated.
 
-```
+```sh
 sudo openssl ca -in <csr_location> -out <certificate_location> -days 3650
 ```
 
 If you used sftp to transfer CSR, it is probably located at "~", thus, the command should look like:
 
-```
+```sh
 sudo openssl ca -in ~/jhuws.csr -out ~/jhuws.crt -days 3650
 ```
 
 It will ask you whether you would like to sign this request. Type "y" to those questions. 
 
-```
+```sh
 Using configuration from /usr/lib/ssl/openssl.cnf
 Check that the request matches the signature
 Signature ok
@@ -338,14 +338,14 @@ If you transfer the certificate through your computer, either by SFTP or WinSCP,
 
 To enable **ws**’s certificate, the certificate and private key should be put into "/etc/ssl."
 
-```
+```sh
 sudo cp <ws_cert_location> /etc/ssl/certs
 sudo cp <ws_key_location> /etc/ssl/private
 ```
 
 For example,
 
-```
+```sh
 sudo cp ~/jhuws.crt /etc/ssl/certs
 sudo cp /etc/ssl/jhuws.key /etc/ssl/private
 ```
@@ -354,7 +354,7 @@ sudo cp /etc/ssl/jhuws.key /etc/ssl/private
 
 Since GENI VMs are linux-powered devices, only Apache, MySQL, and PHP need to be install. Note that the order of installation does matter because installation of PHP depends on Apache and MySQL. After you ssh to **ws** node, use  
 
-```
+```sh
 sudo apt-get update
 ```
 
@@ -363,7 +363,7 @@ to update the latest package lists and their dependency.
 
 ###### Install MySQL:
 
-```
+```sh
 sudo apt-get install mysql-server
 ```
 
@@ -392,20 +392,20 @@ Package configuration
 
 When the installation is completed, check whether it is installed successfully through the following command.
 
-```
+```sh
 sudo netstat -tap | grep mysql
 ```
 
 You will see a message similar to the following one, which means there is a listening port of mysql.
 
-```
+```sh
 tcp        0      0 localhost:mysql         *:*                     LISTEN      18658/mysqld  
 ```
 
  
 ###### Install Apache
 
-```
+```sh
 sudo apt-get install apache2
 ```
 
@@ -413,13 +413,13 @@ You will run a browser to check whether it is installed successfully after all o
 
 ###### Install PHP
 
-```
+```sh
 sudo apt install php-pear php-fpm php-dev php-zip php-curl php-xmlrpc php-gd php-mysql php-mbstring php-xml libapache2-mod-php
 ```
 
 It may take a while to install these packages. After it is installed, a “www” folder will be created under "var." This folder will store source codes of the website.
 
-```
+```sh
 /var
     backups
     cache
@@ -438,7 +438,7 @@ It may take a while to install these packages. After it is installed, a “www�
 
 In addition to PHP itself, some other extensions are needed as well.
 
-```
+```sh
 sudo apt-get install php-intl php-imagick php-imap php-mcrypt php-memcache php7.0-ps php-pspell php-recode php-snmp php7.0-sqlite php-tidy php7.0-xsl
 ```
 
@@ -448,13 +448,13 @@ Notice: the GENI node is initiated with an Ubuntu operation system by default. I
 
 You will write a simple PHP website and try to connect to it in order to test whether PHP was installed successfully. You can use whatever way you like to write the PHP source code. Recall that "www" stores the website source code. To make change to this file, first change its permission.
 
-```
+```sh
 sudo chmod 777 /var/www
 ```
 
 Second, create a file named “info.php” under the “/var/www/html” folder, then copy these codes into this file:
 
-```
+```php
 <?php
 phpinfo();
 ?>
@@ -462,7 +462,7 @@ phpinfo();
 
 Third, restart the Apache service.
 
-```
+```sh
 sudo /etc/init.d/apache2 restart
 ```
 
@@ -472,7 +472,7 @@ To connect to it, some other configurations are needed. This part will be covere
 
 In this lab, the connection test will be done by SSL connection, thus, it is required to enable SSL connection on Apache server. In the "/etc/apache2" directory, you can see “apache2.conf”, which specifies the apache configuration. Those "include" are used to add other configuration file. 
 
-```
+```sh
 # Include module configuration:
 IncludeOptional mods-enabled/*.load
 IncludeOptional mods-enabled/*.conf
@@ -483,20 +483,20 @@ Include ports.conf
 
 To enable SSL connection, copy "default-ssl.conf" from "sites-available" to "sites-enabled" directory.
 
-```
+```sh
 sudo cp /etc/apache2/sites-available/default-ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
 ```
 
 Then, use 
 
-```
+```sh
 ifconfig
 ```
 
 to find IP address, and modify the "default-ssl.conf" in "sites-enabled":
 
 
-```
+```sh
 <IfModule mod_ssl.c>
         <VirtualHost 172.17.2.18:443>
                 ServerAdmin webmaster@localhost
@@ -534,13 +534,13 @@ to find IP address, and modify the "default-ssl.conf" in "sites-enabled":
 
 In line 2, replace "\_default\_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. Note that this should be consistent with your previous setting while generating CSR. In line 32 and 33, change the directory to where your certificate and private key are stored. Save all these changes and use
 
-```
+```sh
 sudo a2enmod ssl
 ```
 
 to enable the SSL module of Apache2. Then, restart apache2 server using command:
 
-```
+```sh
 sudo service apache2 restart
 ```
 
@@ -553,7 +553,7 @@ Now you can test the result of all the previous work by connecting web server fr
 
 Since browser on GENI run so slow that you will get crazy if you find you did something dumb, it is suggested to use Curl to test before you actually run a browser. To make your life easier, get into root environement to do the followings.
 
-```
+```sh
 sudo su
 apt-get update
 apt-get install curl
@@ -561,13 +561,13 @@ apt-get install curl
 
 When the installation is completed, modify the hosts file. It is the file that translates names of websites to IP addresses before the machine made a DNS request. To modify it, change the permission of this file
 
-```
+```sh
 sudo chmod 777 /etc/hosts
 ```
 
 and edit it so that the server name "jhuws.edu" is mapped to the IP addresses.
 
-```
+```sh
 127.0.0.1       localhost loghost localhost.pkileo.ch-geni-net.geni.it.cornell.edu
 10.10.2.1       ATK-link-1 ATK-0 ATK
 10.10.1.1       CA-link-0 CA-0 CA
@@ -582,13 +582,13 @@ and edit it so that the server name "jhuws.edu" is mapped to the IP addresses.
  
 Where the “172.17.2.18” is the IP address of **ws** node. And "jhuws.edu" is the server name set up before. After these changes are made, use
 
-```
+```sh
 curl jhuws.edu
 ```
 
 to see if normal connection works. If it returns a HTML response of our web server, the normal connection is successful. Next, try SSL connection 
 
-```
+```sh
 curl https://jhuws.edu --cacert cacert.crt
 ```
  
@@ -598,7 +598,7 @@ If the HTML reponse still appears, congratulations! You can step further to test
 
 For simplicity, Firefox is the default browser you will use in this experiment. Of course, you can choose other browsers if you want. Note that this part should be done on both **ws** and **user** node. You will first test it on **ws** locally, then test it with **user**.
 
-```
+```sh
 sudo apt-get install firefox
 sudo apt-get install libcanberra-gtk3-module
 ```
@@ -613,7 +613,7 @@ http://groups.geni.net/geni/wiki/HowTo/LoginToNodes
 
 Remember to check these two options, "Enable X11 forwarding" and "MIT-Magic-Cookie-1," in PuTTy configuration. Now, browser can be displayed in a graphical interface. Use this command to launch the browser:
 
-```
+```sh
 firefox
 ```
 
@@ -624,13 +624,13 @@ It might take a while, just be patient and you can see your browser being displa
 
 First, install XQuartz on your Mac. XQuartz is an X server designed for MacOS. Second, open Xquartz with terminal. You should see a xterm window displaying something similar to
 
-```
+```sh
 bash-3.2$
 ```
 
 Third, make an ssh connection to the **user** node in this terminal. Now, browser can be displayed in a graphical interface. Use this command to launch the browser:
 
-```
+```sh
 firefox
 ```
 
@@ -638,13 +638,13 @@ firefox
 
 It’s much simpler when you are using Linux rather than other operation systems. Just ssh into the Linux system of your choice using the -Y argument. For example, 
 
-```
+```sh
 ssh -i ~/.ssh/id_geni_ssh_rsa -Y yjou2@pc1.geni.it.cornell.edu -p 26844
 ```
 
 Then, launch your Firefox.
 
-```
+```sh
 firefox
 ```
 
@@ -652,7 +652,7 @@ firefox
 
 Now, you are ready to test your server through browser. Open Firefox on the **ws** node using command 
 
-```
+```sh
 firefox
 ```
 
@@ -713,13 +713,13 @@ So far, you have already finished the experiment of building a certificate autho
 
 Now, try to revoke the digital certificate. First, connect to the **ca** node and use this command to revoke the digital certificate. The default certificate name in this lab is “jhuws.crt”
 
-```
+```sh
 sudo openssl ca -revoke jhuws.crt
 ```
 
 You will see two messages, "Revoking Certificate XX(some number)" and "Data Base Updated." For example, 
 
-```
+```sh
 Using configuration from /usr/lib/ssl/openssl.cnf
 Revoking Certificate 01.
 Data Base Updated
@@ -727,19 +727,19 @@ Data Base Updated
 
 To make sure it is the one you expected, use 
 
-```
+```sh
 cat index.txt
 ```
 
 to see details of the certificate corresponding to that number. Now, create a new Certificate Revocation List(CRL) with this command:
 
-```
+```sh
 sudo openssl ca -gencrl -out thisca.crl
 ```
 
 Recall that CRL is the file that stores all the revoked certificate. You can take a look at the CRL by using
 
-```
+```sh
 cat thisca.crl
 ```
 
@@ -754,7 +754,7 @@ Remove the old "cacert.crt" and copy the new "cacert.pem" to the **user** node. 
 
 Then, try to connect to the **ws** node with curl. Note that the CRL is included this time. 
 
-```
+```sh
 curl https://jhuws.edu --cacert cacert.crt --crlfile thisca.crl
 ```
  

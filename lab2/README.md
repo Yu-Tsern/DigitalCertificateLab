@@ -4,7 +4,7 @@
   - [Introduction](https://github.com/Yu-Tsern/DigitalCertificateLab/tree/master/lab2#introduction)
   - [Network Topology](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#network-topology)
   - [Certificates Issuance](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#certificate-issuance)
-  - [LAMP Installation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#lamp-installation)
+  - [Server Setups](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#server-setups)
     - [MySQL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#install-mysql)
     - [Apache](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#install-apache)
     - [PHP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#install-php)

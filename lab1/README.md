@@ -4,7 +4,7 @@
   - [Introduction](https://github.com/Yu-Tsern/DigitalCertificateLab/tree/master/lab1#introduction)
   - [Network Topology](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#network-topology)
   - [Certificates Issuance](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#certificate-issuance)
-  - [LAMP Installation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#lamp-installation)
+  - [Server setups](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#server-setups)
     - [MySQL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-mysql)
     - [Apache](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-apache)
     - [PHP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-php)
@@ -350,7 +350,7 @@ sudo cp ~/jhuws.crt /etc/ssl/certs
 sudo cp /etc/ssl/jhuws.key /etc/ssl/private
 ```
 
-## LAMP Installation
+## Server setups
 
 Since GENI VMs are linux-powered devices, only Apache, MySQL, and PHP need to be install. Note that the order of installation does matter because installation of PHP depends on Apache and MySQL. After you ssh to **ws** node, use  
 
@@ -601,6 +601,7 @@ For simplicity, Firefox is the default browser you will use in this experiment. 
 ```sh
 sudo apt-get install firefox
 sudo apt-get install libcanberra-gtk3-module
+Sudo apt-get dbus-x11
 ```
 
 The following steps vary. They depend on your operating system. For windows and MacOS, they have to rely on third party softwares to display graphical interface.

@@ -1,5 +1,5 @@
 # Lab1 Certificate Issuance and Revocation
-  
+
 ## Content
   - [Introduction](https://github.com/Yu-Tsern/DigitalCertificateLab/tree/master/lab1#introduction)
   - [Network Topology](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#network-topology)
@@ -20,11 +20,11 @@
 
 
 ## Introduction
-Certificate Authorities are trusted third parties which issue electronic documents proving digital entitys' identifications. In public key infrastructure specifically, it is the party that verify ownerships of public keys.
-
-LAMP is a software bundle named after its software components, Linux operating system, Apache HTTP Server, MySQL database management system and PHP programming language. This bundle is suitable for building dynamic websites and web applications. In addition to these four components, this software bundle can also be combined with other software packages. 
-
-In this lab, you will build a websites and generate a valid certificate for it. Then, you'll try to connect to this website from another geni node. At last, you will revoke the certificate and try to connect to the website again.
+  Certificate Authorities are trusted third parties that issue electronic documents proving digital entitys' identifications. In public key infrastructure, it is the party that verify ownerships of public keys. In this lab, you will build a websites and generate a valid certificate for it. Then, you'll try to connect to this website from another geni node. At last, you will revoke the certificate and try if you can connect to the website with a revoked certificate. 
+  
+  In the first step, you will use LAMP to build your website. LAMP is a software bundle named after its software components, Linux operating system, Apache HTTP Server, MySQL database management system and PHP programming language. This bundle is commonly used when building dynamic websites, content of the website is not static, and web applications. 
+  
+  In the second and the third steps, you will use OpenSSL, a cryptographic toolkit, to generate public private key pairs and digital certificates, and test the validity through cURL, command-line tool for transferring data, or firefox. 
 
 
 ## Network topology
@@ -32,7 +32,17 @@ In this lab, you will build a websites and generate a valid certificate for it. 
 ![Alt text](pic/Picture1.png?raw=true "Title")
 
 
-Node **ca** will be the certificate authority in this experiment. Node **ws** will be the web server in this experiment. It is the node you will install LAMP on. Node **user** is where you launch your browser and connect to the web server. **_Notice: Not until all the GENI nodes turn green can you continue the following steps. This may take a while._**
+Four VMs are needed in this lab. Node **ca** will be the certificate authority in this experiment. Node **ws** will be the web server in this experiment. It is the node that LAMP will be installed. Node **user** is where you launch your browser and connect to the website. Since some of the configurations requires knowledge about the IP addresses and port numbers of these nodes, they are summarized in the following table.
+
+Node Name    | IP Address    | Port Number
+------------ | ------------- | -------------
+ca           | 10.10.3.1     | 27803
+ws           | 10.10.1.2     | 27805
+user         | 10.10.1.1     | 27804
+attacker     | 10.10.2.1     | 27802
+
+Content in the first column | Content in the second column
+**_Notice: Not until all the GENI nodes turn green can you continue the following steps. This may take a while._**
 
 ## Certificate Issuance
 

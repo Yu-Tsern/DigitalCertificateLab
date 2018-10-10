@@ -29,10 +29,10 @@
 
 ## Network topology
 
-![Alt text](pic/Picture1.png?raw=true "Title")
+![Alt text](pic/Picture100.png?raw=true "Title")
 
 
-Four VMs are needed in this lab. Node **ca** will be the certificate authority in this experiment. Node **ws** will be the web server in this experiment. It is the node that LAMP will be installed. Node **user** is where you launch your browser and connect to the website. Since some of the configurations requires knowledge about the IP addresses and port numbers of these nodes, they are summarized in the following table.
+Four VMs are needed in this lab. Node **ca** will be the certificate authority in this experiment. Node **ws** will be the web server in this experiment. It is the node that LAMP will be installed. Node **user** is where you launch your browser and connect to the website. Since some of the configurations requires knowledge about the IP addresses and port numbers of these nodes, they are summarized in the following table. It is strongly recommended that you write down such table for your own convenience.
 
 Node Name    | IP Address    | Port Number
 ------------ | ------------- | -------------
@@ -41,7 +41,6 @@ ws           | 10.10.1.2     | 27805
 user         | 10.10.1.1     | 27804
 attacker     | 10.10.2.1     | 27802
 
-Content in the first column | Content in the second column
 **_Notice: Not until all the GENI nodes turn green can you continue the following steps. This may take a while._**
 
 ## Certificate Issuance

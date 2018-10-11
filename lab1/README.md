@@ -20,7 +20,7 @@
 
 
 ## Introduction
-  Certificate Authorities are trusted third parties that issue electronic documents proving digital entitys' identifications. In public key infrastructure, it is the party that verify ownerships of public keys. In this lab, you will generate a valid certificate and build a websites upon it. Then, you'll try to connect to this website from another geni node. At last, you will revoke the certificate and try if you can connect to the website with a revoked certificate. 
+  Certificate Authorities are trusted third parties that issue electronic documents proving digital entitys' identifications. In public key infrastructure, it is the party that verify ownerships of public keys. In this lab, you will first generate a valid certificate and build a websites upon it. Then, you'll try to connect to this website from another geni node. At last, you will revoke the certificate and test if you can connect to the website with a revoked certificate. 
   
   Software packages used in this labs are listed as follows:
   - OpenSSL: This is a cryptographic toolkit for TLS/SSL, you will use it to generate public private key pairs and digital certificates.
@@ -134,7 +134,7 @@ organizationalUnitName_default  = ISI
 
 If you choose to do download the file, here are some tips for file transfer. 
 
-(1) SFTP
+#### SFTP
 
 First, open another terminal and establish a SFTP connection by:
 
@@ -164,7 +164,7 @@ Uploading openssl.cnf to /users/yjou2/openssl.cnf
 openssl.cnf                                                     100%   11KB 147.7KB/s   00:00   
 ```
 
-(2) WinSCP
+#### WinSCP
 
 Instructions of how to use WinSCP can be found in this link: http://mountrouidoux.people.cofc.edu/CyberPaths/winscp.html Using WinSCP requires you to change the permission of "openssl.cnf" first.
 
@@ -251,7 +251,7 @@ An optional company name []:
 
 Still, there are several ways to transfer your files.
 
-(1) SFTP
+#### SFTP
 
 First, setup a connection with **ws** node and download your CSR.
 
@@ -283,7 +283,7 @@ Uploading jhuws.csr to /users/yjou2/jhuws.csr
 jhuws.csr                                                       100%  993    36.1KB/s   00:00  
 ```
 
-(2) WinSCP
+#### WinSCP
 
 Still, using WinSCP requires changing permission of "openssl.cnf."
 
@@ -454,7 +454,7 @@ In addition to PHP itself, some other extensions are needed as well.
 sudo apt-get install php-intl php-imagick php-imap php-mcrypt php-memcache php7.0-ps php-pspell php-recode php-snmp php7.0-sqlite php-tidy php7.0-xsl
 ```
 
-Notice: the GENI node is initiated with an Ubuntu operation system by default. If you choose other operation systems rather the default operation system, there might be a warning message showing you it may fail to initiate the GENI nodes.
+**_Notice: the GENI node is initiated with an Ubuntu operation system by default. If you choose other operation systems rather the default one, there might be a warning message showing that it may fail to initiate the GENI nodes._**
 
 ### Write a simple PHP website
 

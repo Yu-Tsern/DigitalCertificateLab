@@ -1,9 +1,13 @@
-# lab4
+# 
 
 ## Content
 - Introduction to smart contracts
 - Introduction to blockchain based PKI
+- Introduction to Hyperledger Fabric
 - Environment Setup
+- Build your first network
+- Write your first application
+- Smart Contract exploration
 
 ## Introduction to smart contracts:
  
@@ -23,6 +27,7 @@ This blockchain will be a private blockchain, meaning that only those with the r
 
 
 ## Environment setup
+There are several software packages needed to be installed and some configurations should be made before you can run hyperledger fabric. Follow the instructions below to setup the environment. 
 
 ### Install cURL
 ```
@@ -33,8 +38,7 @@ sudo apt-get install curl
 sudo apt-get install docker-compose
 ```
 ### Install Go
-The installation instructions of Go can be found on its website. It is recommended that you write a helloworld.go to test if it is installed ssuccesfully. 
-https://golang.org/doc/install
+The installation process of Go can be found on its [website](https://golang.org/doc/install). It is recommended that you write a helloworld program in go to test if it is installed ssuccesfully. 
 
 ### Install nodejs
 ```
@@ -48,56 +52,75 @@ npm install npm@5.6.0 -g
 sudo apt-get install python
 ```
 
-## Download docker image
-
 ### Add user to group
-This fixs permission denied
+To enable non-root user to run docker commands, run the command:
 ```
-sudo usermod -a -G docker $USER
+sudo usermod -aG docker $USER
 ```
-restart your VM
+This will take effect after restarting your VM
 
 ### Download docker image
 ```
 sudo curl -sSL http://bit.ly/2ysbOFE | bash -s 1.3.0-rc1
 sudo curl -sSL http://bit.ly/2ysbOFE | bash -s 1.3.0-rc1 1.3.0-rc1 0.4.12
 ```
+
 ## Network exploration
+In this section, you will try bringing up the blockchain network using scripts "byfn.sh". 
 
 ### Network activation
+First, get into "fabric-samples/first-network" directory and then run the script. Take a look at the logs it generated. They shows details of how the network was brought up. 
 ```
 cd fabric-samples/first-network
 sudo ./byfn.sh generate
 sudo ./byfn.sh up
+```
+After you're done, shut down the network by running
+```
 sudo ./byfn.sh down
 ```
 
 ### Add new organization
-First, delete previous container
+Next, try to add a new organization using the script "eyfn.sh". Before you do so, make sure previous containers are all deleted. 
 ```
 sudo ./byfn.sh down
+```
+Bring the network up again.
+```
 sudo ./byfn.sh generate
 sudo ./byfn.sh up
 ```
-Add by script
+Add a new organization through "eyfn.sh".
 ```
-./eyfn.sh up
+sudo ./eyfn.sh up
 ```
-## Application exploration
-Delete all container and network
+Skim through the log it generated, then bring the network down again.
+```
+sudo ./eyfn.sh down
+sudo ./byfn.sh down
+```
+
+## Write your first application
+To get more familiar with Hyperledger Fabric applications, you will play with the sample code Fabcar in this section.
+
+### Delete all container and network
+Similar to every other steps in this lab, bring down the network.
 ```
 ./byfn.sh down
+```
+In addition, delete stale containers and network so that it won't mess up with the new one.
+```
 cd fabric-samples/fabcar  && ls
 docker rm -vf $(docker ps -a -q)
 docker rmi -f $(docker image -a -q)
 docker container prune
 docker network prune
 ```
-
-if this is not the first time you play with this tutorial:
+if this is not the first time you play with this tutorial, you also need to delete the underlying chaincode image for the fabcar smart contract:
 ```
 docker rmi dev-peer0.org1.example.com-fabcar-1.0-5c906e402ed29f20260ae42283216aa75549c571e2e380f3615826365d8269ba
 ```
+
 Install the dependency
 ```
 npm install -g
@@ -169,24 +192,37 @@ node query.js
 ```
 
 
-If at any point, something has been messed up. Feel free to reset all the blockchain related environments and start from the beginning of execution.
+**_Notice: If at any point, something has been messed up. Feel free to reset all the blockchain related environments and start from the beginning of execution._**
 
-`sudo docker rm -f $(sudo docker ps -aq)`
-`sudo docker network prune`
-`sudo docker rmi dev-peer0.org1.example.com-fabcar-1.0-5c906e402ed29f20260ae42283216aa75549c571e2e380f3615826365d8269ba`
-
+```
+sudo docker rm -f $(sudo docker ps -aq)
+sudo docker network prune
+sudo docker rmi dev-peer0.org1.example.com-fabcar-1.0-5c906e402ed29f20260ae42283216aa75549c571e2e380f3615826365d8269ba
+```
 
 
 Execution:
 To start up the blockchain, run the script startFabric.sh. 
-	`sudo ./startFabric.sh`
+```
+sudo ./startFabric.sh
+```
 Then, we must enroll an admin onto the blockchain since this is a permissioned ledger.
-	`node enrollAdmin.js`
+```
+node enrollAdmin.js
+```
 Then, we register users to query to blockchain.
-	`node registerUser.js`
+```
+node registerUser.js
+```
 Then, we can interact with the blockchain as a user.
-	`node query.js` - used to get data out of the blockchain
-	`node invoke.js` - used to modify data on the blockchain. Either as a new object or redefining a previously made object.
+```
+node query.js
+```
+- used to get data out of the blockchain
+```
+node invoke.js
+``` 
+- used to modify data on the blockchain. Either as a new object or redefining a previously made object.
 
 Query.js
 Let’s look at the code to see how query.js makes actual queries. Notice how we are communicating with the blockchain at grpc://localhost:7051. This is the port at which we can communicate with our chain. Notice in line 43, we are interacting as ‘user1’. In line 52, we are constructing our query request. The chaincode is named ‘fabcar’ and we are calling function ‘queryCert’ from our smart contract. We pass the necessary args required in our function.

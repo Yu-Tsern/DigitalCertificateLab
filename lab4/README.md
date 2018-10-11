@@ -1,6 +1,11 @@
-### lab4
+# lab4
 
-## Prerequisite
+## Introduction to smart contracts:
+ 
+Contracts are written or spoken agreements. They are intended to be enforceable by law. Thus, all trust in contracts are inherited from the trust in legal system. However, with the advent of blockchains and cryptocurrencies, people started exploring whether this centralized trust model can be replaced so that the idea of contract can be incorporated into blockchains' decentralized and anonymized nature. Currently, there is a prevailing solution called smart contracts. Details of contracts are programed and stored on the blockchains instead of being written on papers. With blockchain's help, they will be transparent and immutable after they are posted. In this tutorial, we demonstrate an usage of smart contracts, maintaining the validities of Certificate Authorities. 
+
+
+## Environment setup
 
 ### Install cURL
 ```
@@ -11,6 +16,8 @@ sudo apt-get install curl
 sudo apt-get install docker-compose
 ```
 ### Install Go
+The installation instructions of Go can be found on its website. It is recommended that you write a helloworld.go to test if it is installed ssuccesfully. 
+https://golang.org/doc/install
 
 ### Install nodejs
 ```

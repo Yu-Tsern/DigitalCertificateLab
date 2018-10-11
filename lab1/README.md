@@ -756,7 +756,7 @@ Recall that CRL is the file that stores all the revoked certificate. You can tak
 cat thisca.crl
 ```
 
-Then, initialize the ”crlnumber” to "00." Everytime a certificate is revoked, this number will increase by one. Finally, the digital certificate is successfully revoked.
+Initially, the ”crlnumber” was set to "00". Everytime a certificate is revoked, this number will increase by one. Finally, the digital certificate is successfully revoked.
 
 
 ## Certificate Revocation Test

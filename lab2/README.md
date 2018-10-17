@@ -38,14 +38,15 @@ In this lab, you will simulate the issuance of certificates within this structur
 
 ## Certificate Issuance
 
-###### Root CA
+### Root CA
 
-Similar to the first lab, you will have to create and initilize some files in order to ensure the configuration file will run smoothly. Connect to **ca1** and run the following commands.
+Similar to the first lab, you will have to initilize some files and directories. Connect to **ca1** and run the following commands.
 
 ```
 sudo su
 touch /etc/ssl/index.txt
 echo 01 > /etc/ssl/serial
+echo 01 > /etc/ssl/crlnumber
 mkdir /etc/ssl/newcerts
 ```
 
@@ -55,7 +56,7 @@ Then, generate a key pair
 openssl genrsa -des3 -out /etc/ssl/private/ca1.key 2048
 ```
 
-You will be asked to set a 4 to 1023 characters passphrass. Memorize it. It will be used when signing **ca2**'s CSR.
+You will be asked to set a 4 to 1023 characters passphrass. It will be used when signing **ca2**'s CSR.
 
 ```
 Generating RSA private key, 2048 bit long modulus
@@ -72,7 +73,9 @@ Generate a self-signed certificate with that private key.
 openssl req -key /etc/ssl/private/ca1.key -new -x509 -days 365 -out /etc/ssl/ca1.crt
 ```
 
-Fill in the information of that certificate. **_Note that the common name does not matter if the node is not going to host any server. Thus, you can pick whatever name you want for CAs, but the common name for web server should be consistent with your settings. For simplicity, the common names used in the example will correspond to the names of nodes, that is jhuca1.edu, jhuca2.edu, jhuca3.edu, and jhuws.edu_**.
+Fill in the information of that certificate. 
+
+**_Notice: The common name does not matter if the node is not going to host any server. Thus, you can pick whatever name you want for CAs. However, the common name for web server should be consistent with your settings. For simplicity, the common names used in the example will correspond to the names of nodes, that is jhuca1.edu, jhuca2.edu, jhuca3.edu, and jhuws.edu_**.
 
 ```
 You are about to be asked to enter information that will be incorporated
@@ -105,12 +108,13 @@ Finally, edit the directory in "openssl.cnf" line 42:
 
 ###### Intermediate CA
 
-Comparing to the first lab, an intermediate CA, on the one hand, generates certificate signing request(CSR) and send it to its superior CA just like **ws**; on the other hand, it signs its subordiate CA's CSRs like **ca**. Therefore, tasks to be done on **ca2** are the combination of those you did on **ws** and **ca** previously. First, connect to **ca2** and do the followings.
+In contrast to the first lab, there are multiple CA nodes in the second one. One of the extra CA nodes is intermediate CA. An intermediate CA, on the one hand, generates certificate signing request(CSR) and send it to its superior CA just like seb server; on the other hand, it signs its subordiate CA's CSRs like root CA. Therefore, tasks to be done on **ca2** are the combination of those you did on **ws** and **ca** previously. First, connect to **ca2** and do the followings.
 
 ```
 sudo su
 touch /etc/ssl/index.txt
 echo 01 > /etc/ssl/serial
+echo 00 > /etc/ssl/crlnumber
 mkdir /etc/ssl/newcerts
 ```
 

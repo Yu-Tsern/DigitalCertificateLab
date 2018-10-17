@@ -89,10 +89,10 @@ Since all these changes require root privilage, it is suggested to get into root
 
 ```sh
 sudo su
-touch index.txt
-mkdir newcerts
-echo 01 > serial
-echo 00 > serial
+touch /etc/ssl/index.txt
+mkdir /etc/ssl/newcerts
+echo 01 > /etc/ssl/serial
+echo 00 > /etc/ssl/crlnumber
 ```
  
 Second, edit "openssl.cnf" either remotely through "vim"/"vi" or transfer the file to your computer and edit it with your own editors. In line 42, replace the directory ".demoCA" with "/etc/ssl."

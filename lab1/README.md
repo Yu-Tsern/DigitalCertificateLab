@@ -613,7 +613,7 @@ For simplicity, Firefox is the default browser you will use in this experiment. 
 ```sh
 sudo apt-get install firefox
 sudo apt-get install libcanberra-gtk3-module
-Sudo apt-get dbus-x11
+sudo apt-get install dbus-x11
 ```
 
 The following steps vary. They depend on your operating system. For windows and MacOS, they have to rely on third party softwares to display graphical interface.

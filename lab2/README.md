@@ -26,7 +26,7 @@ In this lab, you will simulate the issuance of certificates within this structur
 
 ## Network topology
 
-![Alt text](pic/Picture1.png?raw=true "Title")
+![Alt text](pic/Picture100.png?raw=true "Title")
 
 1. **ca1** will be the root CA in this experiment. 
 2. **ca2** will be the intermediate CA, that is, the subordinate CA of **ca1**. 
@@ -38,7 +38,8 @@ In this lab, you will simulate the issuance of certificates within this structur
 
 ## Certificate Issuance
 
-### Root CA
+### Generate keys and CSRs
+#### Root CA
 
 Similar to the first lab, you will have to initilize some files and directories. Connect to **ca1** and run the following commands.
 
@@ -73,9 +74,7 @@ Generate a self-signed certificate with that private key.
 openssl req -key /etc/ssl/private/ca1.key -new -x509 -days 365 -out /etc/ssl/ca1.crt
 ```
 
-Fill in the information of that certificate. 
-
-**_Notice: The common name does not matter if the node is not going to host any server. Thus, you can pick whatever name you want for CAs. However, the common name for web server should be consistent with your settings. For simplicity, the common names used in the example will correspond to the names of nodes, that is jhuca1.edu, jhuca2.edu, jhuca3.edu, and jhuws.edu_**.
+Fill in the information of that certificate. The common name does not matter if the node is not going to host any server. Thus, you can pick whatever name you want for CAs. However, the common name for web server should be consistent with your settings. For simplicity, the common names used in the example will correspond to the names of nodes, that is jhuca1.edu, jhuca2.edu, jhuca3.edu, and jhuws.edu
 
 ```
 You are about to be asked to enter information that will be incorporated
@@ -106,9 +105,9 @@ Finally, edit the directory in "openssl.cnf" line 42:
  #unique_subject = no                    # Set to 'no' to allow creation of
  ```
 
-###### Intermediate CA
+#### Intermediate CA
 
-In contrast to the first lab, there are multiple CA nodes in the second one. One of the extra CA nodes is intermediate CA. An intermediate CA, on the one hand, generates certificate signing request(CSR) and send it to its superior CA just like seb server; on the other hand, it signs its subordiate CA's CSRs like root CA. Therefore, tasks to be done on **ca2** are the combination of those you did on **ws** and **ca** previously. First, connect to **ca2** and do the followings.
+In contrast to the first lab, there are multiple CA nodes in the second one. One of the extra CA nodes is intermediate CA. An intermediate CA, on the one hand, generates certificate signing request(CSR) and send it to its superior CA just like web server; on the other hand, it signs its subordiate CA's CSRs like root CA. Therefore, tasks to be done on **ca2** are the combination of those you did on **ws** and **ca** previously. First, connect to **ca2** and do the followings.
 
 ```
 sudo su
@@ -142,9 +141,9 @@ Similarly, you will have to put in some information. Then, edit the directory in
  #unique_subject = no                    # Set to 'no' to allow creation of
  ```
 
-###### Local CA
+#### Local CA
 
-The only difference between local CAs and the intermediate ones is the CSR they sign. Local CAs sign CSR belonging to web server, while intermediate CAs sign CSRs from subordinate CAs. Thus, the setup is pretty much the same. Connect to **ca3** and do run these commands.
+The only difference between local CAs and the intermediate CAs is the CSR they sign. Local CAs sign CSR belonging to web server, while intermediate CAs sign CSRs from subordinate CAs. Thus, the setup is pretty much the same. Connect to **ca3** and do run these commands.
 
 ```
 sudo su
@@ -178,7 +177,7 @@ Similarly, you will have to put in some information. Then, edit the directory in
  #unique_subject = no                    # Set to 'no' to allow creation of
  ```
 
-###### Web Server
+#### Web Server
 
 The web server won't function as a certificate authority, thus, just generate a private key and a corresponding CSR.
 
@@ -187,75 +186,46 @@ sudo openssl genrsa -des3 -out /etc/ssl/private/ws.key 2048
 sudo openssl req -new -days 3650 -key /etc/ssl/private/ws.key -out /etc/ssl/ws.csr
 ```
 
-###### Sign certificates
+### Sign certificates
 
-First, move intermediate CA's CSR to the root CA, that is, use WinSCP/SFTP or other methods to transfer "ca2.csr" from **ca2** to **ca1**. 
-
-![Alt text](pic/Picture38.png?raw=true "Title")
-
-Sign "ca2.csr" with the following command
+#### Intermediate CA
+First, move intermediate CA's CSR to the root CA, that is, use WinSCP/SFTP or other methods to transfer "ca2.csr" from **ca2** to **ca1**m and sign "ca2.csr" with the following command
 
 ```
 openssl ca -extensions v3_ca -in ca2.csr -config /etc/ssl/openssl.cnf -days 3000 -out ca2.crt -cert /etc/ssl/ca1.crt -keyfile /etc/ssl/private/ca1.key
 ```
 
-Return the resulting certificate, "ca2.crt," to **ca2**.
+After it is signed, return the resulting certificate "ca2.crt" to **ca2**.
 
-![Alt text](pic/Picture41.png?raw=true "Title")
-
--------
-
-Second, move local CA's CSR to the intermediate CA, that is, transfer "ca3.csr" from **ca3** to **ca2**. 
-
-![Alt text](pic/Picture39.png?raw=true "Title")
-
-Sign "ca3.csr" with the following command
-
+#### Local CA
+Move local CA's CSR to the intermediate CA, that is, transfer "ca3.csr" from **ca3** to **ca2**, and sign "ca3.csr" with the following command
 ```
 openssl ca -extensions v3_ca -in ca3.csr -config /etc/ssl/openssl.cnf -days 3000 -out ca3.crt -cert ca2.crt -keyfile /etc/ssl/private/ca2.key
 ```
+After it is signed, return the resulting certificate, "ca3.crt," to **ca3**.
 
-Return the resulting certificate, "ca3.crt," to **ca3**.
-
-![Alt text](pic/Picture42.png?raw=true "Title")
-
--------
-
-Third, move web server's CSR to the local CA, that is, transfer "ws.csr" from **ws** to **ca3**. 
-
-![Alt text](pic/Picture39.png?raw=true "Title")
-
-Sign "ws.csr" with the following command
-
+#### Web Server
+Third, move web server's CSR to the local CA, that is, transfer "ws.csr" from **ws** to **ca3**, and sign "ws.csr" with the following command
 ```
 openssl ca -extensions v3_ca -in ws.csr -config /etc/ssl/openssl.cnf -days 3000 -out ws.crt -cert ca3.crt -keyfile /etc/ssl/private/ca3.key
 ```
-
-Return the resulting certificate, "ws.crt," to **ws**.
-
-![Alt text](pic/Picture42.png?raw=true "Title")
-
-
-To enable **ws**’s certificate, the certificate and private key should be put into "/etc/ssl."
+After it is signed, return the resulting certificate, "ws.crt," to **ws**. To enable **ws**’s certificate, the certificate should be put into "/etc/ssl."
 
 ```
 sudo cp <ws_cert_location> /etc/ssl/certs
-sudo cp <ws_key_location> /etc/ssl/private
 ```
 
 For example,
 
 ```
 sudo cp ~/ws.crt /etc/ssl/certs/
-sudo cp /etc/ssl/ws.key /etc/ssl/private/
 ```
 
 ## Server setups
 
-This part is pretty much the same as the previous lab, for simplicity, detail explainations for installations are omitted and only commands are listed here.
+Most of the contents are pretty much the same as the previous lab, for simplicity, detail explainations for installations are omitted and only commands are listed here.
 
-
-###### Install LAMP
+### Install LAMP
 
 ```
 sudo apt-get update
@@ -265,7 +235,7 @@ sudo apt-get install php-pear php-fpm php-dev php-zip php-curl php-xmlrpc php-gd
 sudo apt-get install php-intl php-imagick php-imap php-mcrypt php-memcache php7.0-ps php-pspell php-recode php-snmp php7.0-sqlite php-tidy php7.0-xsl
 ```
 
-###### Write a simple PHP website
+### Write a simple PHP website
 
 First change the permission of "/var/www."
 
@@ -288,7 +258,7 @@ sudo /etc/init.d/apache2 restart
 ```
 
 ### Configure certificates
-Use SFTP/WinSCP or any other file transfer tools to put "ws.crt", "ca1.crt", "ca2.crt", "ca3.crt" onto **ws** node. Then, concatenating "ca1.crt", "ca2.crt", "ca3.crt" to create "ca.crt"
+It is more complicated to configure certificates in this lab since depth of the certificate chain is no longer one. Use SFTP/WinSCP or any other file transfer tools to put "ws.crt", "ca1.crt", "ca2.crt", "ca3.crt" onto **ws** node. Then, concatenating "ca1.crt", "ca2.crt", "ca3.crt" to create "ca.crt".
 ```
 cat ca1.crt ca2.crt ca3.crt > ca.crt
 ```
@@ -298,7 +268,7 @@ mv ca.crt /etc/ssl/certs/
 mv ws.crt /etc/ssl/certs/
 ```
 
-###### Enable Apache SSL connection
+### Enable Apache SSL connection
 
 To enable SSL connection, copy "default-ssl.conf" from "sites-available" to "sites-enabled".
 
@@ -351,11 +321,15 @@ Modify "/etc/apache2/sites-enabled/default-ssl.conf" :
                 SSLCertificateKeyFile /etc/ssl/private/ws.key              
 ```
 
-In line 2, replace "\_default\_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. In line 32, 33, and 34, change the directory to where your certificate and private key are stored, and add a new line specifying SSLCertificateChainFile.
+In line 2, replace "\_default\_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. In line 32, 33, and 34, change the directory to where your certificate and private key are stored, and add a new line specifying **SSLCertificateChainFile**.
 
 **_Notice: ServerName should be consistent with your previous setting while generating CSR.**
 
-Use the following command
+Check whether the configuration is correct:
+```
+apachectl configtest
+```
+If so, use the following command
 ```
 sudo a2enmod ssl
 ```
@@ -370,7 +344,7 @@ Enter passphrase for SSL/TLS keys for pcvm2-12.geni.it.cornell.edu:443 (RSA):
 
 ## Certificate Issuance Test
 
-### Install self-signed certificates from root CA
+### Install the self-signed certificates from root CA
 
 Put "ca1.crt" into /etc/ssl/certs on the **user** node, and create a symbolic link for it (more details of symbolic link can be found [here](http://gagravarr.org/writing/openssl-certs/others.shtml#ca-openssl)). 
 ```

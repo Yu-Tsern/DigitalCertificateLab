@@ -6,7 +6,7 @@
   - [Certificates Issuance](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#certificate-issuance)
   - [Server Setups](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#server-setups)
   - [Certificate Issuance Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#certificate-issuance-test)
-  - [Questions](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#assignment)
+  - [Questions](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#questions)
 
 
 ## Introduction

@@ -426,7 +426,7 @@ You will run a browser to check whether it is installed successfully after all o
 ### Install PHP
 
 ```sh
-sudo apt install php-pear php-fpm php-dev php-zip php-curl php-xmlrpc php-gd php-mysql php-mbstring php-xml libapache2-mod-php
+sudo apt-get install php-pear php-fpm php-dev php-zip php-curl php-xmlrpc php-gd php-mysql php-mbstring php-xml libapache2-mod-php
 ```
 
 It may take a while to install these packages. After it is installed, a “www” folder will be created under "var." This folder will store source codes of the website.

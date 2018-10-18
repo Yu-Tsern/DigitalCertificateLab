@@ -5,18 +5,9 @@
   - [Network Topology](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#network-topology)
   - [Certificates Issuance](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#certificate-issuance)
   - [Server setups](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#server-setups)
-    - [MySQL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-mysql)
-    - [Apache](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-apache)
-    - [PHP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#install-php)
-    - [Simple PHP websites](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#write-a-simple-php-website)
-    - [Apache SSL connection](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#enable-apache-ssl-connection)
   - [Certificate Issuance Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#certificate-issuance-test)
-    - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#curl)
-    - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#browser)
   - [Certificate Revocation](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#revoke-a-digital-certificate)
   - [Certificate Revocation Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#certificate-revocation-test)
-    - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#curl-1)
-    - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab1/README.md#browser-1)
 
 
 ## Introduction
@@ -30,17 +21,16 @@
 
 ## Network topology
 
-![Alt text](pic/Picture100.png?raw=true "Title")
+![Alt text](pic/Picture101.png?raw=true "Title")
 
 
 Four VMs are needed in this lab. Node **ca** will be the certificate authority in this experiment. Node **ws** will be the web server in this experiment. It is the node that LAMP will be installed. Node **user** is where you launch your browser and connect to the website. Since some of the configurations requires knowledge about the IP addresses and port numbers of these nodes, they are summarized in the following table. It is strongly recommended that you write down such table for your own convenience.
 
 Node Name    | Port Number
 ------------ | -------------
-ca           | 27803
-ws           | 27805
-user         | 27804
-attacker     | 27802
+ca           | 27642
+ws           | 27644
+user         | 27643
 
 **_Notice: Not until all the GENI nodes turn green can you continue the following steps. This may take a while._**
 
@@ -95,7 +85,7 @@ echo 01 > /etc/ssl/serial
 echo 00 > /etc/ssl/crlnumber
 ```
  
-Second, edit "openssl.cnf" either remotely through "vim"/"vi" or transfer the file to your computer and edit it with your own editors. In line 42, replace the directory ".demoCA" with "/etc/ssl."
+Edit "openssl.cnf" either remotely through "vim"/"vi" or transfer the file to your computer and edit it with your own editors. In line 42, replace the directory ".demoCA" with "/etc/ssl."
 
 ```sh
  [ CA_default ]
@@ -106,6 +96,19 @@ Second, edit "openssl.cnf" either remotely through "vim"/"vi" or transfer the fi
  database        = $dir/index.txt        # database index file.
  #unique_subject = no                    # Set to 'no' to allow creation of
 ```
+
+In this lab, CA's certificate will be called "ca.crt", and CA's key will be called "ca.key". Modify the name in line 50 and 55.
+
+```
+certificate     = $dir/ca.crt           # The CA certificate
+serial          = $dir/serial           # The current serial number
+crlnumber       = $dir/crlnumber        # the current crl number
+                                        # must be commented out to leave a V1 CRL
+crl             = $dir/crl.pem          # The current CRL
+private_key     = $dir/private/ca.key   # The private key
+RANDFILE        = $dir/private/.rand    # private random number file
+```
+
 
 [ optional ] Change defaut values in line 129, 134, 139 and 146.
 
@@ -145,7 +148,7 @@ sftp -i <geni_private_key> -oPort=<geni_port> <user>@<host>
 For example, 
 
 ```sh
-sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=27803 yjou2@pc2.instageni.illinois.edu
+sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=27644 yjou2@pc1.geni.it.cornell.edu
 ```
 
 After putting in the passphrase created when generating your private key, a "sftp>" prompt should appear. Now, use "mget" to fetch the file. If the file is retrieved succefully, it will show you the file name, file size, transfer rate and elapsed time. Your terminal will show you something similar to the followings.
@@ -177,7 +180,7 @@ sudo chmod 777 openssl.cnf
 Now, the **ca** node can generate its private key and self-signed certificate. The command of generating private key is:
 
 ```sh
-sudo openssl genrsa -out /etc/ssl/private/cakey.pem 2048
+sudo openssl genrsa -out /etc/ssl/private/ca.key 2048
 ```
 
 You can check whether the private key was generated succefully by listing files in "private." If everything went well, you will see a "cakey.pem" in it.
@@ -189,13 +192,13 @@ sudo ls /etc/ssl/private
 Next, the command of creating self-signed certificate is:
 
 ```sh
-sudo openssl req -new -x509 -key /etc/ssl/private/cakey.pem -out cacert.pem
+sudo openssl req -new -x509 -key /etc/ssl/private/ca.key -out /etc/ssl/ca.crt
 ```
 
 It will ask you to key in information such as country name and organizaton name. If you did modify default values in previous steps, just leave it blank if values inside those brackets are the same as your expectation. Note that no server will be setup on **ca** node, so you can set whatever common name you like. However, when it comes to **ws** node, the common name should be consistent with your configuration.
 
 ```sh
-root@ca:/etc/ssl# openssl req -new -x509 -key /etc/ssl/private/cakey.pem -out cacert.pem
+root@ca:/etc/ssl# openssl req -new -x509 -key /etc/ssl/private/cakey.pem -out /etc/ssl/ca.crt
 You are about to be asked to enter information that will be incorporated
 into your certificate request.
 What you are about to enter is what is called a Distinguished Name or a DN.
@@ -219,8 +222,8 @@ Now, the **ca** node is ready to sign **ws**'s certificate. The next step is to 
 ```sh
 cd /etc/ssl
 sudo su
-openssl genrsa -out jhuws.key 2048
-openssl req -new -key jhuws.key -out jhuws.csr
+openssl genrsa -out /etc/ssl/private/jhuws.key 2048
+openssl req -new -key /etc/ssl/private/jhuws.key -out /etc/ssl/jhuws.csr
 ```
  
 Similar to the process of generating self-signed certificate on the **ca** node, it will ask you to put in several information. However, the common name cannot be set arbitrarily this time, it should be consistent with your configuration.
@@ -263,9 +266,9 @@ mget <file_directory>
 For example, 
 
 ```sh
-$ sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=27805 yjou2@pc2.instageni.illinois.edu
+$ sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=27644 yjou2@pc1.geni.it.cornell.edu
 Enter passphrase for key '/Users/yu-tsern/.ssh/id_geni_ssh_rsa': 
-Connected to pc2.geni.it.cornell.edu.
+Connected to pc1.geni.it.cornell.edu.
 sftp> mget /etc/ssl/jhuws.csr
 Fetching /etc/ssl/jhuws.csr to jhuws.csr
 /etc/ssl/jhuws.csr                                              100%  993    18.9KB/s   00:00    
@@ -275,9 +278,9 @@ sftp>
 Then, setup another connection with the **ca** node. Note that you are not permitted to write to the "etc/ssl" on **ca** directly, thus it is easier to put it in "~" instead. It does not matter where you put the CSR file since the file location can be specified when signing it.
 
 ```sh
-$ sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=27803 yjou2@pc2.instageni.illinois.edu
+$ sftp -i ~/.ssh/id_geni_ssh_rsa -oPort=27642 yjou2@pc1.geni.it.cornell.edu
 Enter passphrase for key '/Users/yu-tsern/.ssh/id_geni_ssh_rsa': 
-Connected to pc2.geni.it.cornell.edu.
+Connected to pc1.geni.it.cornell.edu.
 sftp> put jhuws.csr
 Uploading jhuws.csr to /users/yjou2/jhuws.csr
 jhuws.csr                                                       100%  993    36.1KB/s   00:00  
@@ -317,8 +320,8 @@ Signature ok
 Certificate Details:
         Serial Number: 1 (0x1)
         Validity
-            Not Before: Jun  9 22:50:08 2018 GMT
-            Not After : Jun  6 22:50:08 2028 GMT
+            Not Before: Oct 18 13:30:05 2018 GMT
+            Not After : Oct 15 13:30:05 2028 GMT
         Subject:
             countryName               = US
             stateOrProvinceName       = MD
@@ -331,11 +334,11 @@ Certificate Details:
             Netscape Comment: 
                 OpenSSL Generated Certificate
             X509v3 Subject Key Identifier: 
-                A6:40:9B:DC:99:67:27:C6:23:D0:72:A6:C6:FD:A9:FD:17:A9:45:E2
+                61:E6:2C:B3:52:E6:6B:9F:A0:D6:EC:30:27:27:92:6D:93:1E:D8:6F
             X509v3 Authority Key Identifier: 
-                keyid:8B:D6:E6:4D:D7:28:3D:02:5E:35:12:7F:A0:82:B6:4F:9C:AF:F2:68
+                keyid:A7:B4:9F:05:5D:43:03:37:D2:B9:85:C6:EB:35:4C:51:3A:5A:A8:D7
 
-Certificate is to be certified until Jun  6 22:50:08 2028 GMT (3650 days)
+Certificate is to be certified until Oct 15 13:30:05 2028 GMT (3650 days)
 Sign the certificate? [y/n]:y
 
 
@@ -344,7 +347,7 @@ Write out database with 1 new entries
 Data Base Updated
 ```
 
-Once **ws**'s certificate is generated, transfer "jhuws.crt" to **ws** node and "cacert.pem" to **user** node. Replace the file name "cacert.pem" with "cacert.crt." In general, a chain of certificates are needed when the server is proving its ownership of the public key. However, for simplicity, there's only one certificate in the chain in this lab. Additionally, recall that when client sees a chain of certificates, it traces the path of trust back to the root CA and see if it is trust worthy, and that is the reason why "cacert.pem" should be transfered to the **user** node. 
+Once **ws**'s certificate is generated, transfer "jhuws.crt", "ca.crt" to **ws** node and "ca.crt" to **user** node. In general, a chain of certificates are needed when the server is proving its ownership of the public key. However, for simplicity, there's only one certificate in the chain in this lab. Additionally, recall that when client sees a chain of certificates, it traces the path of trust back to the root CA and see if it is trust worthy, and that is the reason why "ca.crt" should be transfered to the **user** node. 
 
 If you transfer the certificate through your computer, either by SFTP or WinSCP, you can open it and take a look at its content. Use "cat" command to view it on Linux, or double click it on Mac/Windows. You can see that "jhuws.crt" is issued by "jhuca.edu," which is the certificate authority. 
 
@@ -505,12 +508,12 @@ Then, use
 ifconfig
 ```
 
-to find IP address, and modify the "default-ssl.conf" in "sites-enabled":
+to find IP address, and modify "/etc/apache2/sites-enabled/default-ssl.conf" :
 
 
 ```sh
 <IfModule mod_ssl.c>
-        <VirtualHost 172.17.2.18:443>
+        <VirtualHost 172.17.1.14:443>
                 ServerAdmin webmaster@localhost
                 ServerName www.jhuws.edu
                 DocumentRoot /var/www/html
@@ -541,10 +544,16 @@ to find IP address, and modify the "default-ssl.conf" in "sites-enabled":
                 #   If both key and certificate are stored in the same file, only the
                 #   SSLCertificateFile directive is needed.
                 SSLCertificateFile      /etc/ssl/certs/jhuws.crt
+                SSLCertificateChainFile /etc/ssl/certs/ca.crt
                 SSLCertificateKeyFile /etc/ssl/private/jhuws.key
 ```
 
-In line 2, replace "\_default\_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. Note that this should be consistent with your previous setting while generating CSR. In line 32 and 33, change the directory to where your certificate and private key are stored. Save all these changes and use
+In line 2, replace "_default_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. In line 32, 33, and 34, change the directory to where your certificate and private key are stored, and add a new line specifying SSLCertificateChainFile.
+
+Check whether the configuration is correct:
+```
+apachectl configtest
+```
 
 ```sh
 sudo a2enmod ssl
@@ -587,140 +596,34 @@ and edit it so that the server name "jhuws.edu" is mapped to the IP addresses.
 10.10.3.2       WS-link-2 WS-2 WS
 10.10.1.2       WS-link-0 WS-1
 10.10.2.2       WS-link-1 WS-0
-172.17.2.18     jhuws.edu
-172.17.2.18     www.jhuws.edu
+172.17.2.14     jhuws.edu
+172.17.2.14     www.jhuws.edu
 ```
 
  
-Where the “172.17.2.18” is the IP address of **ws** node. And "jhuws.edu" is the server name set up before. After these changes are made, use
+“172.17.2.14” is the IP address of **ws** node. And "jhuws.edu" is the server name set up before. After these changes are made, use
 
 ```sh
 curl jhuws.edu
 ```
 
-to see if normal connection works. If it returns a HTML response of our web server, the normal connection is successful. Next, try SSL connection 
+to see if normal connection works. If it returns a HTML response of our web server, the normal connection is successful. Next, try to include "ca.crt" when launching the connection
 
 ```sh
-curl https://jhuws.edu --cacert cacert.crt
+curl https://jhuws.edu --cacert ca.crt
 ```
  
-If the HTML reponse still appears, congratulations! You can step further to test through the browser.
+If the HTML reponse still appears, congratulations! You can step further to test through the openssl.
 
-### Browser(Optional)
+Put "ca.crt" into /etc/ssl/certs on the user node, and create a symbolic link for it (more details of symbolic link can be found here).
 
-For simplicity, Firefox is the default browser you will use in this experiment. Of course, you can choose other browsers if you want. Note that this part should be done on both **ws** and **user** node. You will first test it on **ws** locally, then test it with **user**.
+ln -s ca.crt `openssl x509 -hash -noout -in ca.crt`.0
 
-```sh
-sudo apt-get install firefox
-sudo apt-get install libcanberra-gtk3-module
-sudo apt-get install dbus-x11
+Use openssl to test the connection.
+
 ```
-
-The following steps vary. They depend on your operating system. For windows and MacOS, they have to rely on third party softwares to display graphical interface.
-
-#### Windows:
-
-First, install Xming locally. Xming is an X11 display server for Microsoft Windows. Second, launch the X server. You should see the Xming icon in the taskbar if it is up and running. Third, use PuTTY to connect to the **user** node. You can read the instruction here if you are not familiar with PuTTY.
-
-http://groups.geni.net/geni/wiki/HowTo/LoginToNodes
-
-Remember to check these two options, "Enable X11 forwarding" and "MIT-Magic-Cookie-1," in PuTTy configuration. Now, browser can be displayed in a graphical interface. Use this command to launch the browser:
-
-```sh
-firefox
+openssl s_client -showcerts -connect www.jhuws.edu:443
 ```
-
-It might take a while, just be patient and you can see your browser being displayed with the help of Xming.
-
-
-#### Mac
-
-First, install XQuartz on your Mac. XQuartz is an X server designed for MacOS. Second, open Xquartz with terminal. You should see a xterm window displaying something similar to
-
-```sh
-bash-3.2$
-```
-
-Third, make an ssh connection to the **user** node in this terminal. Now, browser can be displayed in a graphical interface. Use this command to launch the browser:
-
-```sh
-firefox
-```
-
-#### Linux
-
-It’s much simpler when you are using Linux rather than other operation systems. Just ssh into the Linux system of your choice using the -Y argument. For example, 
-
-```sh
-ssh -i ~/.ssh/id_geni_ssh_rsa -Y yjou2@pc1.geni.it.cornell.edu -p 26844
-```
-
-Then, launch your Firefox.
-
-```sh
-firefox
-```
-
-### Test Apache locally
-
-Now, you are ready to test your server through browser. Open Firefox on the **ws** node using command 
-
-```sh
-firefox
-```
-
-Put “127.0.0.1” in the address bar and press ENTER. If it shows the "Apache2 Ubuntu Default Page," the Apache service is installed successfully.
-
-
-### Test PHP locally
-
-In this step, you will try to connect to the simple PHP website you wrote to test whether the PHP server functions correctly. First, run the browser on the **ws** node. Second, put "127.0.0.1/info.php" into the address bar. Seeing configuration information of PHP means the PHP was installed successfully.
-
-
-### Connection test on user node
-
-Open the browser on **user** node and visit "jhuws.edu/info.php." If it shows you the same web page when testing PHP locally on the **ws** node. You can now try to install the digital certificate. First click on the menu on the upper right corner.
-
-![Alt text](pic/Picture69.png?raw=true "Title")
-
-Then, go to "preference >> Privacy & Security >> Certificates >> View Certificates." If you cannot find "Advanced" in your browser, it is because there's some differences between each firefox version, try "preference >> Advanced >> Certificates >> View Certificates." 
-
-![Alt text](pic/Picture70.png?raw=true "Title")
-
-No matter how you open that window, click the "import" below.
-
-![Alt text](pic/Picture71.png?raw=true "Title")
-
-Find "cacert.crt" you copied to **user** node before.
-
-![Alt text](pic/Picture72.png?raw=true "Title")
-
-Trust this certificate authority you built on your own.
-
-![Alt text](pic/Picture73.png?raw=true "Title")
-
-Now you can see your certificate authority is in the list of trusted certificate authorities.
- 
-![Alt text](pic/Picture74.png?raw=true "Title")
-
-Visit "jhuws.edu/info.php" again, you can see there is a exclamation mark in the address bar, which means the connection is not secure.
-
-![Alt text](pic/Picture75.png?raw=true "Title")
-
-Try to use "https" instead of "http." You will see a green lock shows up beside the exclamation mark. The connection is now secure. You can view more details of this connection by clicking “>,” and you can view the certificate information of this website by clicking "more information" in the prompt
-
-![Alt text](pic/Picture76.png?raw=true "Title")
-
-There's an option to view the certificate.
-
-![Alt text](pic/Picture77.png?raw=true "Title")
-
-Here is an example, which is consistent with those information we put in before.
-
-![Alt text](pic/Picture78.png?raw=true "Title")
-
-So far, you have already finished the experiment of building a certificate authority and issuing a digital certificate.
-
 
 ## Revoke a digital certificate
 
@@ -747,13 +650,13 @@ cat index.txt
 to see details of the certificate corresponding to that number. Now, create a new Certificate Revocation List(CRL) with this command:
 
 ```sh
-sudo openssl ca -gencrl -out thisca.crl
+sudo openssl ca -gencrl -out ca.crl
 ```
 
 Recall that CRL is the file that stores all the revoked certificate. You can take a look at the CRL by using
 
 ```sh
-cat thisca.crl
+cat ca.crl
 ```
 
 Initially, the ”crlnumber” was set to "00". Everytime a certificate is revoked, this number will increase by one. Finally, the digital certificate is successfully revoked.
@@ -761,26 +664,22 @@ Initially, the ”crlnumber” was set to "00". Everytime a certificate is revok
 
 ## Certificate Revocation Test
 
-Remove the old "cacert.crt" and copy the new "cacert.pem" to the **user** node. As you have done before, change the extension from "pem to "crt." Additionally, move the Certificate Revokation List, "thisca.crl," to the **user** node. 
+Move the Certificate Revokation List, "ca.crl," to the **user** node. 
 
 ### CURL
 
 Then, try to connect to the **ws** node with curl. Note that the CRL is included this time. 
 
 ```sh
-curl https://jhuws.edu --cacert cacert.crt --crlfile thisca.crl
+curl https://jhuws.edu --cacert ca.crt --crlfile ca.crl
 ```
  
 You will see there's an error complaining the certificate was revoked. 
 
-### Browser(Optional)
-
-Unfortunately, Firefox removed the user interface of importing CRL, thus, you are not able to revoke a certificate on your own. Information can be found in the following website. https://wiki.mozilla.org/CA:ImprovingRevocation#Preload_Revocations_of_Intermediate_CA_Certificates However, you can still try a tool, MobaXterm, to configure CRL manually.
-
- ![Alt text](pic/Picture68.png?raw=true "Title")
-
-As you can see from the screenshot, you can move files on the left-hand side of the window, and there's a terminal on the right-hand side.
-
+### OpenSSL
+```
+openssl s_client -showcerts -connect www.jhuws.edu:443
+```
 ## Assignments
 
 1. Google announces to mark the sites without HTTPS in chrome as non-secure by the end of January 2017, which means HTTPS is now mandatory for secure data in chrome. What’s the reason for Google to do so?

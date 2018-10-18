@@ -616,13 +616,21 @@ curl https://jhuws.edu --cacert ca.crt
 If the HTML reponse still appears, congratulations! You can step further to test through the openssl.
 
 Put "ca.crt" into /etc/ssl/certs on the user node, and create a symbolic link for it (more details of symbolic link can be found here).
-
+```
 ln -s ca.crt `openssl x509 -hash -noout -in ca.crt`.0
-
+```
 Use openssl to test the connection.
 
 ```
 openssl s_client -showcerts -connect www.jhuws.edu:443
+```
+If everything went well, you will see message like
+```
+CONNECTED(00000003)
+depth=1 C = US, ST = MD, L = Baltimore, O = JHU, OU = ISI, CN = jhuca.edu
+verify return:1
+depth=0 C = US, ST = MD, O = JHU, OU = ISI, CN = jhuws.edu
+verify return:1
 ```
 
 ## Revoke a digital certificate

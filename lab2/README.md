@@ -150,6 +150,7 @@ The only difference between local CAs and the intermediate ones is the CSR they 
 sudo su
 touch /etc/ssl/index.txt
 echo 01 > /etc/ssl/serial
+echo 00 > /etc/ssl/crlnumber
 mkdir /etc/ssl/newcerts
 ```
 
@@ -188,7 +189,7 @@ sudo openssl req -new -days 3650 -key /etc/ssl/private/ws.key -out /etc/ssl/ws.c
 
 ###### Sign certificates
 
-First, move intermediate CA's CSR to the root CA, that is, use WinSCP/SFTP or other method to transfer "ca2.csr" from **ca2** to **ca1**. 
+First, move intermediate CA's CSR to the root CA, that is, use WinSCP/SFTP or other methods to transfer "ca2.csr" from **ca2** to **ca1**. 
 
 ![Alt text](pic/Picture38.png?raw=true "Title")
 
@@ -260,7 +261,7 @@ This part is pretty much the same as the previous lab, for simplicity, detail ex
 sudo apt-get update
 sudo apt-get install mysql-server
 sudo apt-get install apache2
-sudo apt install php-pear php-fpm php-dev php-zip php-curl php-xmlrpc php-gd php-mysql php-mbstring php-xml libapache2-mod-php
+sudo apt-get install php-pear php-fpm php-dev php-zip php-curl php-xmlrpc php-gd php-mysql php-mbstring php-xml libapache2-mod-php
 sudo apt-get install php-intl php-imagick php-imap php-mcrypt php-memcache php7.0-ps php-pspell php-recode php-snmp php7.0-sqlite php-tidy php7.0-xsl
 ```
 
@@ -286,25 +287,36 @@ Third, restart the Apache service.
 sudo /etc/init.d/apache2 restart
 ```
 
+### Configure certificates
+Use SFTP/WinSCP or any other file transfer tools to put "ws.crt", "ca1.crt", "ca2.crt", "ca3.crt" onto **ws** node. Then, concatenating "ca1.crt", "ca2.crt", "ca3.crt" to create "ca.crt"
+```
+cat ca1.crt ca2.crt ca3.crt > ca.crt
+```
+Move "ws.crt" and "ca.crt" into "/etc/ssl/certs/"
+```
+mv ca.crt /etc/ssl/certs/
+mv ws.crt /etc/ssl/certs/
+```
+
 ###### Enable Apache SSL connection
 
-To enable SSL connection, copy "default-ssl.conf" from "sites-available" to "sites-enabled" directory.
+To enable SSL connection, copy "default-ssl.conf" from "sites-available" to "sites-enabled".
 
 ```
 sudo cp /etc/apache2/sites-available/default-ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
 ```
 
-Then, use 
+Then, find its IP address 
 
 ```
 ifconfig
 ```
 
-to find IP address, which is needed when modifying the "default-ssl.conf" in "sites-enabled":
+Modify "/etc/apache2/sites-enabled/default-ssl.conf" :
 
 ```
 <IfModule mod_ssl.c>
-        <VirtualHost 172.17.2.18:443>
+        <VirtualHost 172.17.2.12:443>
                 ServerAdmin webmaster@localhost
                 ServerName www.jhuws.edu
                 DocumentRoot /var/www/html
@@ -334,42 +346,62 @@ to find IP address, which is needed when modifying the "default-ssl.conf" in "si
                 #   /usr/share/doc/apache2/README.Debian.gz for more info.
                 #   If both key and certificate are stored in the same file, only the
                 #   SSLCertificateFile directive is needed.
-                SSLCertificateFile      /etc/ssl/certs/jhuws.crt
-                SSLCertificateKeyFile /etc/ssl/private/jhuws.key
+                SSLCertificateFile      /etc/ssl/certs/ws.crt
+                SSLCertificateChainFile /etc/ssl/certs/ca.crt
+                SSLCertificateKeyFile /etc/ssl/private/ws.key              
 ```
 
-In line 2, replace "\_default\_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. Note that this should be consistent with your previous setting while generating CSR. In line 32 and 33, change the directory to where your certificate and private key are stored. Save all these changes and use
+In line 2, replace "\_default\_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. In line 32, 33, and 34, change the directory to where your certificate and private key are stored, and add a new line specifying SSLCertificateChainFile.
 
+**_Notice: ServerName should be consistent with your previous setting while generating CSR.**
+
+Use the following command
 ```
 sudo a2enmod ssl
 ```
-
-to enable the SSL module of Apache2. Then, restart apache2 server using command:
-
+to enable the SSL module of Apache2. Then, restart apache2 server using
 ```
 sudo service apache2 restart
+```
+Type in the passphrase for your private key.
+```
+Enter passphrase for SSL/TLS keys for pcvm2-12.geni.it.cornell.edu:443 (RSA):
 ```
 
 ## Certificate Issuance Test
 
-Now you can test the result of all the previous work by connecting web server from the **user** node. First, ssh the **user** node and install firefox. 
+### Install self-signed certificates from root CA
 
+Put "ca1.crt" into /etc/ssl/certs on the **user** node, and create a symbolic link for it (more details of symbolic link can be found [here](http://gagravarr.org/writing/openssl-certs/others.shtml#ca-openssl)). 
 ```
-sudo apt-get install firefox
-sudo apt-get install libcanberra-gtk3-module
-sudo apt-get install dbus-x11
+ln -s ca1.crt `openssl x509 -hash -noout -in ca1.crt`.0
 ```
-
-Launch firefox and import all CA's certificates. 
-
-
-Type "https://jhuws.edu" into your search bar and see if you can get a green lock.
+Use openssl to test the connection. 
+```
+openssl s_client -showcerts -connect www.jhuws.edu:443
+```
+If everything went well, you will see messages like: 
+```
+CONNECTED(00000003)
+depth=3 C = US, ST = MD, L = Baltimore, O = JHU, OU = ISI, CN = jhuca1.edu
+verify return:1
+depth=2 C = US, ST = MD, O = JHU, OU = ISI, CN = jhuca2.edu
+verify return:1
+depth=1 C = US, ST = MD, O = JHU, OU = ISI, CN = jhuca3.edu
+verify return:1
+depth=0 C = US, ST = MD, O = JHU, OU = ISI, CN = jhuws.edu
+verify return:1
+```
+If any of your certificate wasn't signed correctly or you did not installed the root certificate on the **user** node, you might see the following error messages:
+```
+verify error:num=19:self signed certificate in certificate chain
+verify error:num=20:unable to get local issuer certificate
+verify error:num=21:unable to verify the first certificate
+```
 
 ## Assignment
 
-1. Take a look at the news of an information security company, DigiNotar. It was a root certificate authority. An attacker stole its private key and maliciously issueed digital certificate for others. The question is what file in our experiment does the stolen key corresponds to? 
-
-News page: http://www.slate.com/articles/technology/future_tense/2016/12/how_the_2011_hack_of_diginotar_changed_the_internet_s_infrastructure.html
+1. Why **ws** has to concatenate "ca1.crt", "ca2.crt", "ca3.crt" into one file? Is there an alternative way to achieve the same goal? 
 
 2. In our experiment, which node performs the role of root CA? What will happen if the root CA revokes the digital certificate of the intermediate CA? Try this and screenshot your result.
 

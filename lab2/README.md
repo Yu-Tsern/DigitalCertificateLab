@@ -317,7 +317,7 @@ Modify "/etc/apache2/sites-enabled/default-ssl.conf" :
 
 In line 2, replace "\_default\_" with the IP address you just found. Do not remove “:443” after the IP addres. It is the port number for SSL connection. In line 4, insert a line and specify your ServerName. In line 32, 33, and 34, change the directory to where your certificate and private key are stored, and add a new line specifying **SSLCertificateChainFile**.
 
-**_Notice: ServerName should be consistent with your previous setting while generating CSR.**
+**_Notice: ServerName should be consistent with your previous setting while generating CSR._**
 
 Check whether the configuration is correct:
 ```

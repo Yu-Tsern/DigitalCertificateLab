@@ -6,6 +6,7 @@
   - [Certificates Issuance](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#certificate-issuance)
   - [Server Setups](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#server-setups)
   - [Certificate Issuance Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#certificate-issuance-test)
+  - [Questions](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#assignment)
 
 
 ## Introduction
@@ -366,7 +367,7 @@ verify error:num=20:unable to get local issuer certificate
 verify error:num=21:unable to verify the first certificate
 ```
 
-## Assignment
+## Questions
 
 1. Why **ws** has to concatenate "ca1.crt", "ca2.crt", "ca3.crt" into one file? Is there an alternative way to achieve the same goal? 
 

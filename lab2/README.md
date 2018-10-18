@@ -5,14 +5,7 @@
   - [Network Topology](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#network-topology)
   - [Certificates Issuance](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#certificate-issuance)
   - [Server Setups](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#server-setups)
-    - [MySQL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#install-mysql)
-    - [Apache](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#install-apache)
-    - [PHP](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#install-php)
-    - [Simple PHP websites](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#write-a-simple-php-website)
-    - [Apache SSL connection](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#enable-apache-ssl-connection)
   - [Certificate Issuance Test](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#certificate-issuance-test)
-    - [CURL](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#curl)
-    - [Browser](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab2/README.md#browser)
 
 
 ## Introduction

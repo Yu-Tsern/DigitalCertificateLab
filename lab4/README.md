@@ -38,7 +38,37 @@ sudo apt-get install curl
 sudo apt-get install docker-compose
 ```
 ### Install Go
-The installation process of Go can be found on its [website](https://golang.org/doc/install). It is recommended that you write a helloworld program in go to test if it is installed ssuccesfully. 
+The installation process of Go can be found on its [website](https://golang.org/doc/install). First, download the [file](https://golang.org/dl/), and extract it to "/usr/local".
+```
+tar -C /usr/local -xzf go$VERSION.$OS-$ARCH.tar.gz
+```
+
+Export "/usr/local/go/bin" to your PATH environment variable. 
+
+```
+export PATH=$PATH:/usr/local/go/bin
+```
+
+If you would like to make this change permenent, you can add this line to your "/etc/profile" (for a system-wide installation) or "$HOME/.profile". Those scripts will be executed when you log into your computer, thus, you don't have to run this command manually next time. It is recommended that you write a program in go to test if it is installed ssuccesfully. The following code is a simple helloworld program:
+```
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Printf("hello, world\n")
+}
+```
+Create your workspace directory, "$HOME/go", which should be consistent to your GOPATH environment variable, and make the directory "src/hello" inside your workspace, and in that directory create a file named hello.go containing the code above. Build the program using:
+```
+cd $HOME/go/src/hello
+go build
+```
+You will see a executable file "hello" being generated. Execute that file using:
+```
+./hello
+```
+If your go was installed successfully, you can see the "hello, world" message.
 
 ### Install nodejs
 ```

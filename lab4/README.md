@@ -1,12 +1,13 @@
 # Using Blockchain to Manage CA Certificates
 
 ## Content
-- Introduction to smart contracts
-- Introduction to blockchain based PKI
-- Introduction to Hyperledger Fabric
-- Environment Setup
-- Fabcar example
-- Using Blockchain to Manage CA Certificates
+- [Introduction to smart contracts](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#introduction-to-smart-contracts)
+- [Introduction to blockchain based PKI](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#introduction-to-blockchain-based-pki)
+- [Introduction to Hyperledger Fabric]()
+- [Environment Setup](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#environment-setup)
+- [Fabcar example](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#fabcar-example)
+- [Using Blockchain to Manage CA Certificates](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#manage-certificates-using-smart-contract)
+- [Exercises](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#exercises)
 
 ## Introduction to smart contracts:
  
@@ -286,7 +287,7 @@ Let’s look at the code to see how invoke.js modifies the blockchain. You may n
 #### Fabcar.go
 Let’s look at the smart contract code, which is the core logic of our application. You can see that we construct our ‘Cert’ structure to contain 3 parameters: Name, Raw, Revoked. Name is the ‘Subject Name’ in a certificate i.e. Verisign; Raw is the raw bytes of a certificate; Revoked is a boolean of whether this certificate has been revoked. When we make a request to this smart contract, we call the function ‘invoke’. ‘Invoke’ then reroutes that request to the appropriate function. We have already written some of these functions, namely ‘queryCert’, ‘createCert’, and ‘revokeCert’. We have also defined ‘initLedger’, which is called once upon initialization of the smart contract. We have defined some root certificates to jumpstart this blockchain. Go through the functions to make sure you understand how each function works.
 
-### Exercises
+## Exercises
 1. As an exercise, shall we be using query.js or invoke.js to create requests for ‘queryCert’, ‘createCert’, and ‘revokeCert’?
 2. As an exercise, create a new certificate and demonstrate that you can retrieve that certificate.
 3. As an exercise, revoke your previously created certificate.

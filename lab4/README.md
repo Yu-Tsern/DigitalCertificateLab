@@ -5,9 +5,8 @@
 - Introduction to blockchain based PKI
 - Introduction to Hyperledger Fabric
 - Environment Setup
-- Build your first network
-- Write your first application
-- Smart Contract exploration
+- Fabcar example
+- Using Blockchain to Manage CA Certificates
 
 ## Introduction to smart contracts:
  
@@ -96,10 +95,13 @@ sudo curl -sSL http://bit.ly/2ysbOFE | bash -s 1.3.0-rc1
 sudo curl -sSL http://bit.ly/2ysbOFE | bash -s 1.3.0-rc1 1.3.0-rc1 0.4.12
 ```
 
-## Network exploration
-In this section, you will try bringing up the blockchain network using scripts "byfn.sh". 
+## Fabcar example
+In order to get more familiar with Hyperledger fabric, you will go through an sample application that manages car ownerships in this section.
 
-### Network activation
+### Network exploration
+First, try to bring up the blockchain network using scripts "byfn.sh". 
+
+#### Network activation
 First, get into "fabric-samples/first-network" directory and then run the script. Take a look at the logs it generated. They shows details of how the network was brought up. 
 ```
 cd fabric-samples/first-network
@@ -111,7 +113,7 @@ After you're done, shut down the network by running
 sudo ./byfn.sh down
 ```
 
-### Add new organization
+#### Add new organization
 Next, try to add a new organization using the script "eyfn.sh". Before you do so, make sure previous containers are all deleted. 
 ```
 sudo ./byfn.sh down
@@ -131,10 +133,10 @@ sudo ./eyfn.sh down
 sudo ./byfn.sh down
 ```
 
-## Write your first application
+### The Fabcar application
 To get more familiar with Hyperledger Fabric applications, you will play with the sample code Fabcar in this section.
 
-### Delete all container and network
+#### Delete all container and network
 Similar to every other steps in this lab, bring down the network.
 ```
 ./byfn.sh down
@@ -152,16 +154,17 @@ if this is not the first time you play with this tutorial, you also need to dele
 docker rmi dev-peer0.org1.example.com-fabcar-1.0-5c906e402ed29f20260ae42283216aa75549c571e2e380f3615826365d8269ba
 ```
 
-Install the dependency
+#### Install the dependency
 ```
 npm install -g
 ```
-enroll the admin user and use this credential to register the first user 
+
+#### enroll the admin user and use this credential to register the first user 
 ```
 node enrollAdmin.js
 node registerUser.js
 ```
-Query the channel
+#### Query the channel
 ```
 node query.js
 ```
@@ -198,7 +201,8 @@ and line 130:
 ```
 console.log('The transaction has been committed on peer ' + event_hub.getPeerAddr());
 ```
-Use invoke to create the car.
+#### Invoke the channel
+Run the following command to create a car.
 ```
 node invoke.js
 ```
@@ -239,7 +243,7 @@ sudo docker rmi dev-peer0.org1.example.com-fabcar-1.0-5c906e402ed29f20260ae42283
 ### Modify the code
 
 
-### Test the code
+### Code Test
 Just like the car example above, run the script startFabric.sh to start up the blockchain, 
 ```
 sudo ./startFabric.sh
@@ -283,15 +287,7 @@ Let’s look at the code to see how invoke.js modifies the blockchain. You may n
 Let’s look at the smart contract code, which is the core logic of our application. You can see that we construct our ‘Cert’ structure to contain 3 parameters: Name, Raw, Revoked. Name is the ‘Subject Name’ in a certificate i.e. Verisign; Raw is the raw bytes of a certificate; Revoked is a boolean of whether this certificate has been revoked. When we make a request to this smart contract, we call the function ‘invoke’. ‘Invoke’ then reroutes that request to the appropriate function. We have already written some of these functions, namely ‘queryCert’, ‘createCert’, and ‘revokeCert’. We have also defined ‘initLedger’, which is called once upon initialization of the smart contract. We have defined some root certificates to jumpstart this blockchain. Go through the functions to make sure you understand how each function works.
 
 ### Exercises
-
-#### Q1:
-As an exercise, shall we be using query.js or invoke.js to create requests for ‘queryCert’, ‘createCert’, and ‘revokeCert’?
-
-#### Q2:
-As an exercise, create a new certificate and demonstrate that you can retrieve that certificate.
-
-#### Q3:
-As an exercise, revoke your previously created certificate.
-
-#### Q4:
-Consider a scenario in which you rely on this blockchain to manage all your trusted root certificates. You have shut off your computer and in this time, a certificate has been revoked and a new one has been created and placed on the blockchain in its place. Now, you restart your computer. Will you be able to connect to this server immediately upon restart? Why or why not? 
+1. As an exercise, shall we be using query.js or invoke.js to create requests for ‘queryCert’, ‘createCert’, and ‘revokeCert’?
+2. As an exercise, create a new certificate and demonstrate that you can retrieve that certificate.
+3. As an exercise, revoke your previously created certificate.
+4. Consider a scenario in which you rely on this blockchain to manage all your trusted root certificates. You have shut off your computer and in this time, a certificate has been revoked and a new one has been created and placed on the blockchain in its place. Now, you restart your computer. Will you be able to connect to this server immediately upon restart? Why or why not? 

@@ -11,7 +11,7 @@
 
 ## Introduction to smart contracts:
  
-Contracts are written or spoken agreements. They are intended to be enforceable by law. Thus, all trust in contracts are inherited from the trust in legal system. However, with the advent of blockchains and cryptocurrencies, people started exploring whether this centralized trust model can be replaced so that the idea of contract can be incorporated into blockchains' decentralized and anonymized nature. Currently, there is a prevailing solution called smart contracts. Details of contracts are programed and stored on the blockchains instead of being written on papers. With blockchain's help, they will be transparent and immutable after they are posted. In this tutorial, we demonstrate an usage of smart contracts, maintaining the validities of Certificate Authorities. 
+Contracts are written or spoken agreements. They are intended to be enforceable by law. Thus, all trust in contracts are inherited from the trust in legal system. However, with the advent of blockchains and cryptocurrencies, people started exploring whether this centralized trust model can be decentralized or anonymized so that the idea of contract can be incorporated into blockchains. Currently, there is a prevailing solution called smart contracts. Terms of clauses are programed and stored on the blockchains instead of being written on papers. With blockchain's help, they will be transparent and immutable after they were posted. In this tutorial, we demonstrate an usage of smart contracts, maintaining the validities of Certificate Authorities. 
 
 ## Introduction to blockchain based PKI
 

@@ -1,4 +1,4 @@
-# 
+# Using Blockchain to Manage CA Certificates
 
 ## Content
 - Introduction to smart contracts
@@ -15,7 +15,7 @@ Contracts are written or spoken agreements. They are intended to be enforceable 
 
 ## Introduction to blockchain based PKI
 
-Each browser has installed a set of trusted Certificate Authority (CA) certificates. CAs (like Verisign, Symantec, etc.) create root certificates and sign Certificate Signing Requests (CSRs) for other certificates. 
+Assume each browser has installed a set of trusted Certificate Authority (CA) certificates. CAs (like Verisign, Symantec, etc.) create root certificates and sign Certificate Signing Requests (CSRs) for other certificates. 
 
 An organization that owns a domain that wishes to use ssl/tls needs a certificate, as per the protocol. However, if the client does not trust that certificate, then he can refuse the connection. A client verifies certificates sent to him by looking at which certificate signed that certificate. If it was signed by a trusted certificate, normally a CA certificate, then the communication continues.
 
@@ -33,6 +33,7 @@ There are several software packages needed to be installed and some configuratio
 ```
 sudo apt-get install curl
 ```
+
 ### Install docker
 ```
 sudo apt-get install docker-compose
@@ -222,17 +223,24 @@ node query.js
 ```
 
 ## Manage certificates using smart contract
+Obviously, managing car ownership is similar to managing digital certificates. Slightly modifying the sample code yieds a decent blockchain application handling digital certificates. In this section, we will show you the modification process. 
 
 ### Reset the environment
-In this section, we will show you how to modify the sample code above to build a blockchain managing certificates. If at any point, something has been messed up. Feel free to reset all the blockchain related environments and start from the beginning of execution.
+In order not to mess up with the older environment, reset the network and container using following commands. If at any point, something has been messed up. Feel free to reset them all and start from the beginning of execution.
 
 ```
-sudo docker rm -f $(sudo docker ps -aq)
-sudo docker network prune
+cd fabric-samples/fabcar  && ls
+docker rm -vf $(docker ps -a -q)
+docker rmi -f $(docker image -a -q)
+docker container prune
+docker network prune
 sudo docker rmi dev-peer0.org1.example.com-fabcar-1.0-5c906e402ed29f20260ae42283216aa75549c571e2e380f3615826365d8269ba
 ```
+### Modify the code
 
-Just like the example above, run the script startFabric.sh to start up the blockchain, 
+
+### Test the code
+Just like the car example above, run the script startFabric.sh to start up the blockchain, 
 ```
 sudo ./startFabric.sh
 ```
@@ -260,40 +268,30 @@ node invoke.js
 
 Similar to the example above, "query.js" is used to get data out of the blockchain, while "invoke.js" is used to modify data on the blockchain. Either as a new object or redefining a previously made object.
 
-### Code overview
+### Code explanation
 
-Query.js
+#### Query.js
 Let’s look at the code to see how query.js makes actual queries. Notice how we are communicating with the blockchain at grpc://localhost:7051. This is the port at which we can communicate with our chain. Notice in line 43, we are interacting as ‘user1’. In line 52, we are constructing our query request. The chaincode is named ‘fabcar’ and we are calling function ‘queryCert’ from our smart contract. We pass the necessary args required in our function.
 
 We will modify this request for different purposes as we continue this module. 
 
-Invoke.js
+#### Invoke.js
 Let’s look at the code to see how invoke.js modifies the blockchain. You may notice this invoke.js is very similar to query.js, but they are inherently different as invoke.js creates transactions, which modifies the blockchain either by adding a certificate or modifying an existing one. In line 61, we are creating a request very similar to query.js. We want to do the same thing. Call a certain ‘fcn’ with certain ‘args’ will be called against our blockchain smart contract.
 
 
-Fabcar.go
+#### Fabcar.go
 Let’s look at the smart contract code, which is the core logic of our application. You can see that we construct our ‘Cert’ structure to contain 3 parameters: Name, Raw, Revoked. Name is the ‘Subject Name’ in a certificate i.e. Verisign; Raw is the raw bytes of a certificate; Revoked is a boolean of whether this certificate has been revoked. When we make a request to this smart contract, we call the function ‘invoke’. ‘Invoke’ then reroutes that request to the appropriate function. We have already written some of these functions, namely ‘queryCert’, ‘createCert’, and ‘revokeCert’. We have also defined ‘initLedger’, which is called once upon initialization of the smart contract. We have defined some root certificates to jumpstart this blockchain. Go through the functions to make sure you understand how each function works.
 
-### Exercise
+### Exercises
 
 #### Q1:
 As an exercise, shall we be using query.js or invoke.js to create requests for ‘queryCert’, ‘createCert’, and ‘revokeCert’?
 
-ans:
-queryCert - query.js
-createCert, revokeCert - invoke.js
-
+#### Q2:
 As an exercise, create a new certificate and demonstrate that you can retrieve that certificate.
 
-ans:
-Modify invoke.js to call createCert function. Then modify query.js to retrieve that cert.
-
+#### Q3:
 As an exercise, revoke your previously created certificate.
 
-ans:
-Modify invoke.js to call revokeCert
-
+#### Q4:
 Consider a scenario in which you rely on this blockchain to manage all your trusted root certificates. You have shut off your computer and in this time, a certificate has been revoked and a new one has been created and placed on the blockchain in its place. Now, you restart your computer. Will you be able to connect to this server immediately upon restart? Why or why not? 
-
-No. Because the computer has yet to retrieve the new blocks containing the new certificates.
-

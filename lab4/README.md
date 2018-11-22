@@ -3,7 +3,6 @@
 ## Content
 - [Introduction to smart contracts](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#introduction-to-smart-contracts)
 - [Introduction to blockchain based PKI](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#introduction-to-blockchain-based-pki)
-- [Introduction to Hyperledger Fabric]()
 - [Environment Setup](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#environment-setup)
 - [Fabcar example](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#fabcar-example)
 - [Using Blockchain to Manage CA Certificates](https://github.com/Yu-Tsern/DigitalCertificateLab/blob/master/lab4/README.md#manage-certificates-using-smart-contract)

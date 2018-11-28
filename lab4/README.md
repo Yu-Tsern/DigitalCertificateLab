@@ -242,6 +242,20 @@ sudo docker rmi dev-peer0.org1.example.com-fabcar-1.0-5c906e402ed29f20260ae42283
 ```
 ### Modify the code
 
+In this section, you are encouraged to implement a certificate management application by yourself. However, you can still use the code provided in this directory. In order to write this application, you have to first define what attributes should be included in a certificates, and how those information can be retrieve from the blockchain. These can all be specified in three files, "chaincode/fabcar/go/Fabcar.go", "fabcar/query.js", and "fabcar/invoke.js". Details are described as follows.
+
+#### Fabcar.go
+Let’s look at the smart contract code, which is the core logic of our application. You can see that we construct our ‘Cert’ structure to contain 3 parameters: Name, Raw, Revoked. Name is the ‘Subject Name’ in a certificate i.e. Verisign; Raw is the raw bytes of a certificate; Revoked is a boolean of whether this certificate has been revoked. When we make a request to this smart contract, we call the function ‘invoke’. ‘Invoke’ then reroutes that request to the appropriate function. We have already written some of these functions, namely ‘queryCert’, ‘createCert’, and ‘revokeCert’. We have also defined ‘initLedger’, which is called once upon initialization of the smart contract. We have defined some root certificates to jumpstart this blockchain. Go through the functions to make sure you understand how each function works.
+
+#### Query.js
+Let’s look at the code to see how query.js makes actual queries. Notice how we are communicating with the blockchain at grpc://localhost:7051. This is the port at which we can communicate with our chain. Notice in line 43, we are interacting as ‘user1’. In line 52, we are constructing our query request. The chaincode is named ‘fabcar’ and we are calling function ‘queryCert’ from our smart contract. We pass the necessary args required in our function.
+
+We will modify this request for different purposes as we continue this module. 
+
+#### Invoke.js
+Let’s look at the code to see how invoke.js modifies the blockchain. You may notice this invoke.js is very similar to query.js, but they are inherently different as invoke.js creates transactions, which modifies the blockchain either by adding a certificate or modifying an existing one. In line 61, we are creating a request very similar to query.js. We want to do the same thing. Call a certain ‘fcn’ with certain ‘args’ will be called against our blockchain smart contract.
+
+
 
 ### Code Test
 Just like the car example above, run the script startFabric.sh to start up the blockchain, 
@@ -272,19 +286,6 @@ node invoke.js
 
 Similar to the example above, "query.js" is used to get data out of the blockchain, while "invoke.js" is used to modify data on the blockchain. Either as a new object or redefining a previously made object.
 
-### Code explanation
-
-#### Query.js
-Let’s look at the code to see how query.js makes actual queries. Notice how we are communicating with the blockchain at grpc://localhost:7051. This is the port at which we can communicate with our chain. Notice in line 43, we are interacting as ‘user1’. In line 52, we are constructing our query request. The chaincode is named ‘fabcar’ and we are calling function ‘queryCert’ from our smart contract. We pass the necessary args required in our function.
-
-We will modify this request for different purposes as we continue this module. 
-
-#### Invoke.js
-Let’s look at the code to see how invoke.js modifies the blockchain. You may notice this invoke.js is very similar to query.js, but they are inherently different as invoke.js creates transactions, which modifies the blockchain either by adding a certificate or modifying an existing one. In line 61, we are creating a request very similar to query.js. We want to do the same thing. Call a certain ‘fcn’ with certain ‘args’ will be called against our blockchain smart contract.
-
-
-#### Fabcar.go
-Let’s look at the smart contract code, which is the core logic of our application. You can see that we construct our ‘Cert’ structure to contain 3 parameters: Name, Raw, Revoked. Name is the ‘Subject Name’ in a certificate i.e. Verisign; Raw is the raw bytes of a certificate; Revoked is a boolean of whether this certificate has been revoked. When we make a request to this smart contract, we call the function ‘invoke’. ‘Invoke’ then reroutes that request to the appropriate function. We have already written some of these functions, namely ‘queryCert’, ‘createCert’, and ‘revokeCert’. We have also defined ‘initLedger’, which is called once upon initialization of the smart contract. We have defined some root certificates to jumpstart this blockchain. Go through the functions to make sure you understand how each function works.
 
 ## Exercises
 1. As an exercise, shall we be using query.js or invoke.js to create requests for ‘queryCert’, ‘createCert’, and ‘revokeCert’?
